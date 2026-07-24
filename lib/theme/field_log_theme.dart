@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+/// Dev note:
 /// "Field Log" design tokens for Jecord.
-/// Values mirror the Part 3 Design System doc — keep the two in sync
-/// if you tweak anything here.
+
 class FieldLog {
   // Color tokens
   static const bgPage = Color(0xFFF3EEE1);

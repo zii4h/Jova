@@ -7,8 +7,10 @@ class AnalyticsScreen extends StatelessWidget {
 
   const AnalyticsScreen({super.key, required this.applications});
 
-  // Funnel stage = "reached at least this stage", computed from current
+  // Dev note: 
+  //Funnel stage = "reached at least this stage", computed from current
   // status only (no history tracking yet, so this is an approximation).
+  
   int _reachedApplied() => applications.length;
   int _reachedScreening() => applications
       .where((a) => [

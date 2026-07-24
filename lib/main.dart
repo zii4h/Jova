@@ -40,7 +40,9 @@ class _HomeShellState extends State<HomeShell> {
   @override
   void initState() {
     super.initState();
-    // Seed data — swap for a real Supabase read once that's wired in.
+    
+    // Dev note: Seed data — will swap this for a real Supabase read once that's wired in.
+
     _applications = buildMockApplications();
   }
 

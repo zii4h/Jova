@@ -1,7 +1,9 @@
 import '../models/application.dart';
 
-/// Seed data so the app isn't empty on first run.
-/// Swap this out once Supabase is wired in (see the Proposal, 1.9).
+/// Dev note: 
+/// This is a temporary mock data source for the application list. It is used to populate the UI with sample data while the backend is being developed.
+/// WIll swap this out once Supabase is wired in (Proposal, 1.9).
+
 List<JobApplication> buildMockApplications() {
   final now = DateTime.now();
   DateTime daysAgo(int d) => DateTime(now.year, now.month, now.day).subtract(Duration(days: d));

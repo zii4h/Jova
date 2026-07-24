@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../models/application.dart';
 import '../theme/field_log_theme.dart';
 
+/// Dev note:
 /// Opens the guided add/edit form as a modal bottom sheet.
 /// Pass an [existing] application to edit it, or leave null to create one.
 Future<void> showApplicationFormSheet(
