@@ -1,9 +1,6 @@
-# Jecord — Field Log scaffold
+# Jecord — Job Tracker Application
 
-This is a first-look scaffold, not the final app: an in-memory `List<JobApplication>`
-stands in for Supabase (see Proposal 1.9/1.10), and there's no auth yet. It's meant to
-let you see and feel the "Field Log" direction — paper background, index cards,
-rubber-stamp status tags — running for real on device/emulator.
+In progress.
 
 ## What's here
 
@@ -18,7 +15,7 @@ rubber-stamp status tags — running for real on device/emulator.
 - `lib/screens/analytics_screen.dart` — local conversion funnel (Applied → Screening → Interview → Offer) + source breakdown, no AI call yet
 - `lib/main.dart` — app shell holding the shared application list + tab state
 
-## How to drop it into your existing project
+## How to run
 
 1. Copy everything under `lib/` into your project's `lib/`, replacing the existing `main.dart`.
 2. Add the one new dependency to your `pubspec.yaml` (or just copy this one over yours if you haven't customized it):
@@ -32,8 +29,8 @@ rubber-stamp status tags — running for real on device/emulator.
    flutter run
    ```
 
-## What's intentionally not wired up yet
+## What's intentionally not wired up yet (Dev Notes)
 
-- Data doesn't persist — it resets to the mock seed on every restart. That's the Supabase step from your Proposal.
+- Data doesn't persist — it resets to the mock seed on every restart. That's the Supabase step from the Proposal.
 - Analytics funnel counts "reached at least this stage" from current status only, since there's no status-history tracking yet — good enough to see the shape, worth revisiting once you store status changes over time.
 - The AI-generated summary text isn't in here — the funnel and source breakdown are computed locally per Objective 5, exactly as scoped.
