@@ -6,8 +6,9 @@ import 'status_stamp.dart';
 class IndexCard extends StatelessWidget {
   final JobApplication application;
   final VoidCallback? onTap;
+  final VoidCallback? onDelete;
 
-  const IndexCard({super.key, required this.application, this.onTap});
+  const IndexCard({super.key, required this.application, this.onTap, this.onDelete});
 
   String _formatDate(DateTime d) {
     const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
@@ -16,7 +17,7 @@ class IndexCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(
+    final card = InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(FieldLog.radiusCard),
       child: Container(
@@ -59,5 +60,54 @@ class IndexCard extends StatelessWidget {
         ),
       ),
     );
+
+    if (onDelete == null) return card;
+
+    // Dev note:
+    // Swipe-to-discard. confirmDismiss gates it behind a dialog since this
+    // is destructive and there's no undo yet — no snackbar-with-undo to
+    // wire up until state is backed by something more durable than the
+    // in-memory list.
+    return Dismissible(
+      key: ValueKey(application.id),
+      direction: DismissDirection.endToStart,
+      confirmDismiss: (_) => _confirmDelete(context),
+      onDismissed: (_) => onDelete!.call(),
+      background: const SizedBox.shrink(),
+      secondaryBackground: Container(
+        margin: const EdgeInsets.only(bottom: FieldLog.space12),
+        padding: const EdgeInsets.symmetric(horizontal: 20),
+        alignment: Alignment.centerRight,
+        decoration: BoxDecoration(
+          color: FieldLog.stageRejected,
+          borderRadius: BorderRadius.circular(FieldLog.radiusCard),
+        ),
+        child: Text('discard', style: FieldLog.mono(size: 12, color: FieldLog.bgPage, weight: FontWeight.w600)),
+      ),
+      child: card,
+    );
+  }
+
+  Future<bool> _confirmDelete(BuildContext context) async {
+    final result = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: FieldLog.surfaceCard,
+        title: Text('discard entry?', style: FieldLog.display(size: 16)),
+        content: Text('this removes ${application.company} from the log for good.',
+            style: FieldLog.body(size: 13)),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: Text('keep', style: FieldLog.mono(size: 12)),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            child: Text('discard', style: FieldLog.mono(size: 12, color: FieldLog.stageRejected)),
+          ),
+        ],
+      ),
+    );
+    return result ?? false;
   }
 }

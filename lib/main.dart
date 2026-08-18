@@ -40,7 +40,7 @@ class _HomeShellState extends State<HomeShell> {
   @override
   void initState() {
     super.initState();
-    
+
     // Dev note: Seed data — will swap this for a real Supabase read once that's wired in.
 
     _applications = buildMockApplications();
@@ -56,6 +56,12 @@ class _HomeShellState extends State<HomeShell> {
     });
   }
 
+  void _deleteApplication(String id) {
+    setState(() {
+      _applications = _applications.where((a) => a.id != id).toList();
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final screens = [
@@ -63,6 +69,7 @@ class _HomeShellState extends State<HomeShell> {
         applications: _applications,
         onAdd: _addApplication,
         onUpdate: _updateApplication,
+        onDelete: _deleteApplication,
       ),
       CalendarScreen(applications: _applications, onUpdate: _updateApplication),
       AnalyticsScreen(applications: _applications),

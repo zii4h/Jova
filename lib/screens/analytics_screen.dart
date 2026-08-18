@@ -1,16 +1,20 @@
 import 'package:flutter/material.dart';
 import '../models/application.dart';
 import '../theme/field_log_theme.dart';
+import '../widgets/field_memo_card.dart';
 
 class AnalyticsScreen extends StatelessWidget {
   final List<JobApplication> applications;
 
   const AnalyticsScreen({super.key, required this.applications});
 
-  // Dev note: 
-  //Funnel stage = "reached at least this stage", computed from current
+  // Dev note:
+  // Funnel stage = "reached at least this stage", computed from current
   // status only (no history tracking yet, so this is an approximation).
-  
+  // This section stays hardcoded/deterministic on purpose — it's the
+  // ground truth the AI field analysis below is allowed to comment on,
+  // never the other way around.
+
   int _reachedApplied() => applications.length;
   int _reachedScreening() => applications
       .where((a) => [
@@ -48,7 +52,7 @@ class AnalyticsScreen extends StatelessWidget {
     final maxSource = sources.values.isEmpty ? 1 : sources.values.reduce((a, b) => a > b ? a : b);
 
     return SafeArea(
-      child: Padding(
+      child: SingleChildScrollView(
         padding: const EdgeInsets.fromLTRB(18, 24, 18, 100),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -144,6 +148,8 @@ class AnalyticsScreen extends StatelessWidget {
                   ),
                 );
               }),
+            const SizedBox(height: 26),
+            FieldMemoCard(applications: applications),
           ],
         ),
       ),
