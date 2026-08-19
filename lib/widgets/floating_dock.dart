@@ -26,26 +26,59 @@ class FloatingDock extends StatelessWidget {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: List.generate(_items.length, (i) {
-          final selected = i == selectedIndex;
           final item = _items[i];
-          return GestureDetector(
+          return _DockItem(
+            icon: item.icon,
+            selected: i == selectedIndex,
             onTap: () => onSelect(i),
-            child: AnimatedContainer(
-              duration: const Duration(milliseconds: 150),
-              margin: const EdgeInsets.symmetric(horizontal: 4),
-              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-              decoration: BoxDecoration(
-                color: selected ? FieldLog.bgPage : Colors.transparent,
-                borderRadius: BorderRadius.circular(20),
-              ),
-              child: Icon(
-                item.icon,
-                size: 22,
-                color: selected ? FieldLog.textPrimary : FieldLog.bgPage.withOpacity(0.65),
-              ),
-            ),
           );
         }),
+      ),
+    );
+  }
+}
+
+/// Dev note:
+/// Split out from a stateless `GestureDetector` so each icon can track its
+/// own hover state independently — a shared MouseRegion on the whole dock
+/// couldn't tell which icon the pointer is actually over.
+class _DockItem extends StatefulWidget {
+  final IconData icon;
+  final bool selected;
+  final VoidCallback onTap;
+
+  const _DockItem({required this.icon, required this.selected, required this.onTap});
+
+  @override
+  State<_DockItem> createState() => _DockItemState();
+}
+
+class _DockItemState extends State<_DockItem> {
+  bool _hovering = false;
+
+  @override
+  Widget build(BuildContext context) {
+    final bg = widget.selected
+        ? FieldLog.bgPage
+        : (_hovering ? FieldLog.bgPage.withOpacity(0.18) : Colors.transparent);
+    final iconColor = widget.selected ? FieldLog.textPrimary : FieldLog.bgPage.withOpacity(0.65);
+
+    return MouseRegion(
+      cursor: SystemMouseCursors.click,
+      onEnter: (_) => setState(() => _hovering = true),
+      onExit: (_) => setState(() => _hovering = false),
+      child: GestureDetector(
+        onTap: widget.onTap,
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 150),
+          margin: const EdgeInsets.symmetric(horizontal: 4),
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+          decoration: BoxDecoration(
+            color: bg,
+            borderRadius: BorderRadius.circular(20),
+          ),
+          child: Icon(widget.icon, size: 22, color: iconColor),
+        ),
       ),
     );
   }

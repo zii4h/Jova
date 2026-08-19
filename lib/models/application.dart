@@ -44,6 +44,18 @@ class JobApplication {
   String source;
   String notes;
 
+  // Dev note:
+  // Added for the Details/Recruiter split in the edit form. All optional
+  // (default ''/null) so existing callers and mock data don't break.
+  String location;
+  String jobType;
+  String salary;
+  String description;
+  String recruiterName;
+  String recruiterEmail;
+  String recruiterLinkedIn;
+  DateTime? lastContacted;
+
   JobApplication({
     required this.id,
     required this.company,
@@ -52,6 +64,14 @@ class JobApplication {
     required this.status,
     this.source = '',
     this.notes = '',
+    this.location = '',
+    this.jobType = '',
+    this.salary = '',
+    this.description = '',
+    this.recruiterName = '',
+    this.recruiterEmail = '',
+    this.recruiterLinkedIn = '',
+    this.lastContacted,
   });
 
   JobApplication copyWith({
@@ -61,6 +81,14 @@ class JobApplication {
     ApplicationStatus? status,
     String? source,
     String? notes,
+    String? location,
+    String? jobType,
+    String? salary,
+    String? description,
+    String? recruiterName,
+    String? recruiterEmail,
+    String? recruiterLinkedIn,
+    DateTime? lastContacted,
   }) {
     return JobApplication(
       id: id,
@@ -70,6 +98,14 @@ class JobApplication {
       status: status ?? this.status,
       source: source ?? this.source,
       notes: notes ?? this.notes,
+      location: location ?? this.location,
+      jobType: jobType ?? this.jobType,
+      salary: salary ?? this.salary,
+      description: description ?? this.description,
+      recruiterName: recruiterName ?? this.recruiterName,
+      recruiterEmail: recruiterEmail ?? this.recruiterEmail,
+      recruiterLinkedIn: recruiterLinkedIn ?? this.recruiterLinkedIn,
+      lastContacted: lastContacted ?? this.lastContacted,
     );
   }
 }

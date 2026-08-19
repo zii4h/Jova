@@ -41,7 +41,7 @@ class _HomeShellState extends State<HomeShell> {
   void initState() {
     super.initState();
 
-    // Dev note: Seed data — will swap this for a real Supabase read once that's wired in.
+    // Dev note: Seed data, will swap this for a real Supabase read once that's wired in.
 
     _applications = buildMockApplications();
   }
@@ -84,22 +84,8 @@ class _HomeShellState extends State<HomeShell> {
             Positioned(
               right: 24,
               bottom: 96,
-              child: GestureDetector(
-                onTap: () => showApplicationFormSheet(
-                  context,
-                  onSave: _addApplication,
-                ),
-                child: Container(
-                  width: 52,
-                  height: 52,
-                  decoration: BoxDecoration(
-                    color: FieldLog.bgPage,
-                    shape: BoxShape.circle,
-                    border: Border.all(color: FieldLog.textPrimary, width: 2),
-                  ),
-                  alignment: Alignment.center,
-                  child: Text('+', style: FieldLog.display(size: 22)),
-                ),
+              child: _AddButton(
+                onTap: () => showApplicationFormSheet(context, onSave: _addApplication),
               ),
             ),
           Align(
@@ -110,6 +96,52 @@ class _HomeShellState extends State<HomeShell> {
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+/// Dev note:
+/// Container wrapping Text('+') centered by `alignment: center` 
+
+class _AddButton extends StatefulWidget {
+  final VoidCallback onTap;
+  const _AddButton({required this.onTap});
+
+  @override
+  State<_AddButton> createState() => _AddButtonState();
+}
+
+class _AddButtonState extends State<_AddButton> {
+  bool _hovering = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return MouseRegion(
+      cursor: SystemMouseCursors.click,
+      onEnter: (_) => setState(() => _hovering = true),
+      onExit: (_) => setState(() => _hovering = false),
+      child: GestureDetector(
+        onTap: widget.onTap,
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 120),
+          width: 52,
+          height: 52,
+          decoration: BoxDecoration(
+            color: _hovering ? FieldLog.textPrimary : FieldLog.bgPage,
+            shape: BoxShape.circle,
+            border: Border.all(color: FieldLog.textPrimary, width: 2),
+            boxShadow: _hovering
+                ? const [BoxShadow(color: Color(0x33000000), blurRadius: 8, offset: Offset(0, 2))]
+                : const [],
+          ),
+          alignment: Alignment.center,
+          child: Icon(
+            Icons.add_rounded,
+            size: 26,
+            color: _hovering ? FieldLog.bgPage : FieldLog.textPrimary,
+          ),
+        ),
       ),
     );
   }

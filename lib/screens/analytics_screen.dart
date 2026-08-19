@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../models/application.dart';
 import '../theme/field_log_theme.dart';
 import '../widgets/field_memo_card.dart';
+import '../widgets/collapsible_section.dart';
 
 class AnalyticsScreen extends StatelessWidget {
   final List<JobApplication> applications;
@@ -11,9 +12,9 @@ class AnalyticsScreen extends StatelessWidget {
   // Dev note:
   // Funnel stage = "reached at least this stage", computed from current
   // status only (no history tracking yet, so this is an approximation).
-  // This section stays hardcoded/deterministic on purpose — it's the
-  // ground truth the AI field analysis below is allowed to comment on,
-  // never the other way around.
+  // This section — and the overview tiles below — stay hardcoded and
+  // deterministic on purpose: it's the ground truth the AI panel is
+  // allowed to comment on, never the other way around.
 
   int _reachedApplied() => applications.length;
   int _reachedScreening() => applications
@@ -38,6 +39,16 @@ class AnalyticsScreen extends StatelessWidget {
     return map;
   }
 
+  double _avgDaysSinceApplied() {
+    if (applications.isEmpty) return 0;
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    final totalDays = applications
+        .map((a) => today.difference(DateTime(a.appliedDate.year, a.appliedDate.month, a.appliedDate.day)).inDays)
+        .fold<int>(0, (a, b) => a + b);
+    return totalDays / applications.length;
+  }
+
   @override
   Widget build(BuildContext context) {
     final total = applications.length;
@@ -51,6 +62,8 @@ class AnalyticsScreen extends StatelessWidget {
     final sources = _sourceBreakdown();
     final maxSource = sources.values.isEmpty ? 1 : sources.values.reduce((a, b) => a > b ? a : b);
 
+    final interviewRate = total == 0 ? 0.0 : _reachedInterview() / total * 100;
+
     return SafeArea(
       child: SingleChildScrollView(
         padding: const EdgeInsets.fromLTRB(18, 24, 18, 100),
@@ -61,6 +74,42 @@ class AnalyticsScreen extends StatelessWidget {
             const SizedBox(height: 4),
             Container(height: 1.5, color: FieldLog.border),
             const SizedBox(height: 20),
+
+            Text('overview', style: FieldLog.mono(size: 11, weight: FontWeight.w600)),
+            const SizedBox(height: 12),
+            Row(
+              children: [
+                Expanded(child: _StatTile(label: 'logged', value: '$total')),
+                const SizedBox(width: 10),
+                Expanded(child: _StatTile(label: 'interviewing', value: '${_reachedInterview()}')),
+                const SizedBox(width: 10),
+                Expanded(child: _StatTile(label: 'offers', value: '${_reachedOffer()}')),
+                const SizedBox(width: 10),
+                Expanded(child: _StatTile(label: 'rejected', value: '${_rejected()}')),
+              ],
+            ),
+            const SizedBox(height: 10),
+            Row(
+              children: [
+                Expanded(
+                  child: _StatTile(
+                    label: 'interview rate',
+                    value: total == 0 ? '—' : '${interviewRate.toStringAsFixed(0)}%',
+                    wide: true,
+                  ),
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: _StatTile(
+                    label: 'avg. days open',
+                    value: total == 0 ? '—' : _avgDaysSinceApplied().toStringAsFixed(0),
+                    wide: true,
+                  ),
+                ),
+              ],
+            ),
+
+            const SizedBox(height: 26),
             Text('conversion funnel', style: FieldLog.mono(size: 11, weight: FontWeight.w600)),
             const SizedBox(height: 12),
             if (total == 0)
@@ -114,6 +163,7 @@ class AnalyticsScreen extends StatelessWidget {
               Text('${_rejected()} of $total marked rejected along the way',
                   style: FieldLog.mono(size: 11, color: FieldLog.textSecondary)),
             ],
+
             const SizedBox(height: 26),
             Text('source breakdown', style: FieldLog.mono(size: 11, weight: FontWeight.w600)),
             const SizedBox(height: 12),
@@ -148,10 +198,47 @@ class AnalyticsScreen extends StatelessWidget {
                   ),
                 );
               }),
+
             const SizedBox(height: 26),
-            FieldMemoCard(applications: applications),
+            CollapsibleSection(
+              title: 'AI Insights & Recommendations',
+              accentColor: FieldLog.stageInterview,
+              child: FieldMemoCard(applications: applications),
+            ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+/// Dev note:
+/// Small squared stat tile for the overview row — same radiusCard as
+/// IndexCard so the whole screen reads as one consistent, minimally
+/// rounded system rather than mixing pill-shaped and boxy elements.
+class _StatTile extends StatelessWidget {
+  final String label;
+  final String value;
+  final bool wide;
+
+  const _StatTile({required this.label, required this.value, this.wide = false});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: wide ? 14 : 10, vertical: wide ? 14 : 12),
+      decoration: BoxDecoration(
+        color: FieldLog.surfaceCard,
+        border: Border.all(color: FieldLog.border),
+        borderRadius: BorderRadius.circular(FieldLog.radiusCard),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(value, style: FieldLog.display(size: wide ? 20 : 18)),
+          const SizedBox(height: 2),
+          Text(label, style: FieldLog.mono(size: 10, color: FieldLog.textSecondary)),
+        ],
       ),
     );
   }

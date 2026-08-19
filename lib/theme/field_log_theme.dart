@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 /// Dev note:
-/// "Field Log" design tokens for Jecord.
+/// "Field Log" design tokens for Jecord
 
 class FieldLog {
   // Color tokens

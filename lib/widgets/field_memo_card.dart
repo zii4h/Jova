@@ -6,10 +6,12 @@ import '../services/ai_insights_service.dart';
 import '../theme/field_log_theme.dart';
 
 /// Dev note:
-/// The AI half of Analytics. Sits below the hardcoded funnel/source charts
-/// and gives a plain-language read on the same data — generated only when
-/// the user taps for it, never automatically, so it never fires a network
-/// call or spends free-tier quota without being asked.
+/// Body content for the "AI Insights & Recommendations" section on
+/// Analytics. The collapse/expand chrome (border, header, chevron) now
+/// lives in the shared CollapsibleSection wrapping this widget — this
+/// class only owns the idle/loading/ready/error states of the actual
+/// Gemini call, generated on demand (never automatically) so it never
+/// fires a network call or spends free-tier quota unasked.
 class FieldMemoCard extends StatefulWidget {
   final List<JobApplication> applications;
 
@@ -49,35 +51,6 @@ class _FieldMemoCardState extends State<FieldMemoCard> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.fromLTRB(16, 16, 16, 18),
-      decoration: BoxDecoration(
-        color: FieldLog.surfaceCard,
-        border: Border.all(color: FieldLog.border),
-        borderRadius: BorderRadius.circular(FieldLog.radiusCard),
-        boxShadow: const [BoxShadow(color: Color(0x14000000), offset: Offset(1, 2))],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text('field analysis', style: FieldLog.mono(size: 11, weight: FontWeight.w600)),
-              _TinyStamp(active: _state == _MemoState.ready),
-            ],
-          ),
-          const SizedBox(height: 10),
-          Container(height: 1, color: FieldLog.border),
-          const SizedBox(height: 12),
-          _buildBody(),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildBody() {
     switch (_state) {
       case _MemoState.idle:
         return Column(
@@ -160,34 +133,19 @@ class _RunButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(FieldLog.radiusControl),
-      child: Container(
-        padding: EdgeInsets.symmetric(horizontal: compact ? 10 : 14, vertical: compact ? 6 : 10),
-        decoration: BoxDecoration(
-          color: FieldLog.textPrimary,
-          borderRadius: BorderRadius.circular(FieldLog.radiusControl),
+    return MouseRegion(
+      cursor: SystemMouseCursors.click,
+      child: GestureDetector(
+        onTap: onTap,
+        behavior: HitTestBehavior.opaque,
+        child: Container(
+          padding: EdgeInsets.symmetric(horizontal: compact ? 10 : 14, vertical: compact ? 6 : 10),
+          decoration: BoxDecoration(
+            color: FieldLog.textPrimary,
+            borderRadius: BorderRadius.circular(FieldLog.radiusControl),
+          ),
+          child: Text(label, style: FieldLog.mono(size: compact ? 10 : 12, color: FieldLog.bgPage)),
         ),
-        child: Text(label, style: FieldLog.mono(size: compact ? 10 : 12, color: FieldLog.bgPage)),
-      ),
-    );
-  }
-}
-
-class _TinyStamp extends StatelessWidget {
-  final bool active;
-  const _TinyStamp({required this.active});
-
-  @override
-  Widget build(BuildContext context) {
-    final color = active ? FieldLog.stageInterview : FieldLog.textSecondary;
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-      decoration: BoxDecoration(border: Border.all(color: color), borderRadius: BorderRadius.circular(3)),
-      child: Text(
-        active ? 'ON FILE' : 'UNFILED',
-        style: FieldLog.mono(size: 9, color: color, weight: FontWeight.w600),
       ),
     );
   }

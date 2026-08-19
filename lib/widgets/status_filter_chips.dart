@@ -5,7 +5,9 @@ import '../theme/field_log_theme.dart';
 /// Dev note:
 /// Horizontal row of stage filter chips for the dashboard. `null` in
 /// [selected] means "all stages". Kept separate from StatusStamp since
-/// this reads as a tab control, not a per-entry stamp.
+/// this reads as a tab control, not a per-entry stamp. Radius matches
+/// FieldLog.radiusControl (not a maxed-out pill) to stay consistent with
+/// the cards' minimal squareness.
 class StatusFilterChips extends StatelessWidget {
   final ApplicationStatus? selected;
   final ValueChanged<ApplicationStatus?> onSelect;
@@ -63,20 +65,23 @@ class _Chip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final tint = color ?? FieldLog.textPrimary;
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(20),
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-        decoration: BoxDecoration(
-          color: active ? tint : Colors.transparent,
-          border: Border.all(color: tint),
-          borderRadius: BorderRadius.circular(20),
-        ),
-        alignment: Alignment.center,
-        child: Text(
-          '$label · $count',
-          style: FieldLog.mono(size: 11, color: active ? FieldLog.bgPage : tint, weight: FontWeight.w600),
+    return MouseRegion(
+      cursor: SystemMouseCursors.click,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(FieldLog.radiusControl),
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+          decoration: BoxDecoration(
+            color: active ? tint : Colors.transparent,
+            border: Border.all(color: tint),
+            borderRadius: BorderRadius.circular(FieldLog.radiusControl),
+          ),
+          alignment: Alignment.center,
+          child: Text(
+            '$label · $count',
+            style: FieldLog.mono(size: 11, color: active ? FieldLog.bgPage : tint, weight: FontWeight.w600),
+          ),
         ),
       ),
     );

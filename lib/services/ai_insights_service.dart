@@ -6,15 +6,12 @@ import '../config/env.dart';
 
 /// Dev note:
 /// Talks to the Gemini free-tier API to turn the raw application log into
-/// a short "field analysis" — the AI reading the same file a human case
+/// a short "field analysis" , the AI reading the same file a human case
 /// handler would, and saying what it actually means.
 ///
-/// This is deliberately separate from AnalyticsScreen's funnel/source
-/// math: those numbers are computed locally and are always correct by
-/// construction. This service is interpretation layered on top of that
-/// ground truth, called only when the user asks for it (never on a timer
-/// or on screen load) so it never surprises anyone with a network call or
-/// silently burns free-tier quota.
+/// numbers are computed locally and are always correct by
+/// construction. 
+
 class AiInsightsService {
   static const _model = 'gemini-2.5-flash';
 
@@ -111,13 +108,33 @@ class AiInsightsService {
 
   static String _buildPrompt(List<JobApplication> applications) {
     final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+
+    // Dev note:
+    // Optional fields (location/type/salary/recruiter contact) only get
+    // appended to a row when the user actually set them — an application
+    // logged with just company/role still produces a clean, readable row
+    // instead of a line full of "unspecified" placeholders.
     final rows = applications.map((a) {
-      final daysAgo = DateTime(now.year, now.month, now.day)
-          .difference(DateTime(a.appliedDate.year, a.appliedDate.month, a.appliedDate.day))
-          .inDays;
+      final daysAgo = today.difference(DateTime(a.appliedDate.year, a.appliedDate.month, a.appliedDate.day)).inDays;
       final src = a.source.trim().isEmpty ? 'unspecified' : a.source.trim();
+
+      final extras = <String>[];
+      if (a.location.trim().isNotEmpty) extras.add('location: ${a.location.trim()}');
+      if (a.jobType.trim().isNotEmpty) extras.add('type: ${a.jobType.trim()}');
+      if (a.salary.trim().isNotEmpty) extras.add('salary: ${a.salary.trim()}');
+      if (a.recruiterName.trim().isNotEmpty || a.lastContacted != null) {
+        final contactDaysAgo = a.lastContacted == null
+            ? null
+            : today.difference(DateTime(a.lastContacted!.year, a.lastContacted!.month, a.lastContacted!.day)).inDays;
+        extras.add(contactDaysAgo == null
+            ? 'has a recruiter contact logged, no last-contacted date'
+            : 'last contacted recruiter $contactDaysAgo day(s) ago');
+      }
+      final extrasText = extras.isEmpty ? '' : ' | ${extras.join(' | ')}';
+
       return '- ${a.company} | ${a.role} | status: ${a.status.label} | '
-          'source: $src | applied $daysAgo day(s) ago';
+          'source: $src | applied $daysAgo day(s) ago$extrasText';
     }).join('\n');
 
     return '''
@@ -130,7 +147,10 @@ Write a short field analysis of their job search based ONLY on this data.
 Do not invent companies, numbers, or events not in the log.
 Be specific — reference actual company names, statuses, or timeframes where useful.
 Keep it encouraging but honest; call out real problems (e.g. stale applications,
-one-sided sourcing, silence after interview) if the data shows them.
+one-sided sourcing, silence after interview, no recruiter follow-up logged)
+if the data shows them. If location, job type, salary, or recruiter contact
+info is present on some entries, you may use it to spot patterns — but never
+penalize an entry for missing optional fields the user chose not to fill in.
 
 Respond with ONLY minified JSON, no markdown fences, matching exactly this shape:
 {"headline": "one sentence, at most 18 words, the single biggest takeaway",
