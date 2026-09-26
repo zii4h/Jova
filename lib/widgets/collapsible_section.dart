@@ -19,15 +19,18 @@ class CollapsibleSection extends StatefulWidget {
   final bool initiallyExpanded;
   final Widget? trailing;
 
-  const CollapsibleSection({
-    super.key,
-    required this.title,
-    required this.child,
-    this.countLabel,
-    this.accentColor,
-    this.initiallyExpanded = true,
-    this.trailing,
-  });
+  final bool? expanded;
+
+ const CollapsibleSection({
+  super.key,
+  required this.title,
+  required this.child,
+  this.countLabel,
+  this.accentColor,
+  this.initiallyExpanded = true,
+  this.expanded,
+  this.trailing,
+});
 
   @override
   State<CollapsibleSection> createState() => _CollapsibleSectionState();
@@ -35,6 +38,16 @@ class CollapsibleSection extends StatefulWidget {
 
 class _CollapsibleSectionState extends State<CollapsibleSection> {
   late bool _expanded = widget.initiallyExpanded;
+
+@override
+void didUpdateWidget(covariant CollapsibleSection oldWidget) {
+  super.didUpdateWidget(oldWidget);
+
+  if (widget.expanded != null &&
+      widget.expanded != oldWidget.expanded) {
+    _expanded = widget.expanded!;
+  }
+}
 
   @override
   Widget build(BuildContext context) {

@@ -14,10 +14,16 @@ Future<void> showApplicationFormSheet(
     isScrollControlled: true,
     backgroundColor: FieldLog.bgPage,
     shape: const RoundedRectangleBorder(
-      borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      borderRadius: BorderRadius.vertical(
+        top: Radius.circular(
+          FieldLog.radiusLarge,
+        ),
+      ),
     ),
     builder: (ctx) => Padding(
-      padding: EdgeInsets.only(bottom: MediaQuery.of(ctx).viewInsets.bottom),
+      padding: EdgeInsets.only(
+        bottom: MediaQuery.of(ctx).viewInsets.bottom,
+      ),
       child: _ApplicationForm(
         existing: existing,
         initialStatus: initialStatus,
@@ -44,6 +50,19 @@ class _ApplicationForm extends StatefulWidget {
 
 class _ApplicationFormState extends State<_ApplicationForm> {
   int _tab = 0;
+
+  String _currency = 'PHP';
+
+static const List<String> _currencies = [
+  'PHP',
+  'USD',
+  'EUR',
+  'GBP',
+  'JPY',
+  'AUD',
+  'CAD',
+  'SGD',
+];
 
   late final TextEditingController _company;
   late final TextEditingController _role;
@@ -184,7 +203,11 @@ class _ApplicationFormState extends State<_ApplicationForm> {
       notes: _notes.text.trim(),
       location: _location.text.trim(),
       jobType: _jobType.text.trim(),
-      salary: _salary.text.trim(),
+      
+      salary: _salary.text.trim().isEmpty
+    ? ''
+    : '$_currency ${_salary.text.trim()}',
+
       description: _description.text.trim(),
       recruiterName: _recruiterName.text.trim(),
       recruiterEmail: _recruiterEmail.text.trim(),
@@ -333,7 +356,7 @@ class _ApplicationFormState extends State<_ApplicationForm> {
         TextField(
           controller: _role,
           style: FieldLog.body(size: 13),
-          decoration: _decoration('Job title'),
+          decoration: _decoration('Job title *'),
           onChanged: (_) => setState(() {}),
         ),
 
@@ -342,7 +365,7 @@ class _ApplicationFormState extends State<_ApplicationForm> {
         TextField(
           controller: _company,
           style: FieldLog.body(size: 13),
-          decoration: _decoration('Company'),
+          decoration: _decoration('Company *'),
           onChanged: (_) => setState(() {}),
         ),
 
@@ -420,7 +443,47 @@ class _ApplicationFormState extends State<_ApplicationForm> {
         TextField(
           controller: _salary,
           style: FieldLog.body(size: 13),
-          decoration: _decoration('Salary (optional)'),
+          keyboardType: const TextInputType.numberWithOptions(
+            decimal: true,
+          ),
+          decoration: _decoration('Salary (optional)').copyWith(
+            suffixIcon: Padding(
+              padding: const EdgeInsets.only(right: 8),
+              child: DropdownButtonHideUnderline(
+                child: DropdownButton<String>(
+                  value: _currency,
+                  dropdownColor: FieldLog.surfaceCard,
+                  icon: const Icon(
+                    Icons.keyboard_arrow_down_rounded,
+                    size: 17,
+                  ),
+                  style: FieldLog.body(
+                    size: 12,
+                    color: FieldLog.textPrimary,
+                    weight: FontWeight.w600,
+                  ),
+                  items: _currencies
+                      .map(
+                        (currency) => DropdownMenuItem<String>(
+                          value: currency,
+                          child: Text(currency),
+                        ),
+                      )
+                      .toList(),
+                  onChanged: (value) {
+                    if (value == null) return;
+
+                    setState(() {
+                      _currency = value;
+                    });
+                  },
+                ),
+              ),
+            ),
+            suffixIconConstraints: const BoxConstraints(
+              minWidth: 76,
+            ),
+          ),
         ),
 
         const SizedBox(height: 12),

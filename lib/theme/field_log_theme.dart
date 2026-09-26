@@ -3,15 +3,12 @@ import 'package:google_fonts/google_fonts.dart';
 
 class FieldLog {
   // ---------------------------------------------------------------------------
-  // Existing tokens
-  //
-  // Kept for compatibility with widgets that still directly reference
-  // FieldLog.bgPage, surfaceCard, textPrimary, etc.
+  // Colors
   // ---------------------------------------------------------------------------
 
-  static const bgPage = Color(0xFFF7F7F8);
-  static const surfaceCard = Color(0xFFFFFFFF);
-  static const surfaceMuted = Color(0xFFF1F2F4);
+  static const bgPage = Color(0xFFF5F5F6);
+  static const surfaceCard = Color(0xFFFAFAFB);
+  static const surfaceMuted = Color(0xFFF0F0F2);
 
   static const border = Color(0xFFE4E5E9);
   static const borderStrong = Color(0xFFD5D7DC);
@@ -30,12 +27,18 @@ class FieldLog {
   static const stageOffer = Color(0xFF16845B);
   static const stageRejected = Color(0xFFC94A4A);
 
+  // ---------------------------------------------------------------------------
   // Shape
-  static const radiusCard = 14.0;
-  static const radiusControl = 10.0;
-  static const radiusLarge = 18.0;
+  // ---------------------------------------------------------------------------
 
+  static const radiusCard = 8.0;
+  static const radiusControl = 6.0;
+  static const radiusLarge = 8.0;
+
+  // ---------------------------------------------------------------------------
   // Spacing
+  // ---------------------------------------------------------------------------
+
   static const space4 = 4.0;
   static const space8 = 8.0;
   static const space12 = 12.0;
@@ -48,6 +51,18 @@ class FieldLog {
   // Typography
   // ---------------------------------------------------------------------------
 
+  // ONLY for the JOVA logo/header
+  static TextStyle brand({double size = 22, Color? color, FontWeight? weight}) {
+    return GoogleFonts.saira(
+      fontSize: size,
+      height: 1.15,
+      letterSpacing: 0.5,
+      color: color ?? textPrimary,
+      fontWeight: weight ?? FontWeight.w600,
+    );
+  }
+
+  // Normal headings: Calendar, Analytics, etc.
   static TextStyle display({
     double size = 22,
     Color? color,
@@ -55,18 +70,14 @@ class FieldLog {
   }) {
     return GoogleFonts.inter(
       fontSize: size,
-      height: 1.2,
-      letterSpacing: -0.35,
+      height: 1.15,
       color: color ?? textPrimary,
       fontWeight: weight ?? FontWeight.w600,
     );
   }
 
-  static TextStyle mono({
-    double size = 12,
-    Color? color,
-    FontWeight? weight,
-  }) {
+  // Small labels / metadata
+  static TextStyle mono({double size = 12, Color? color, FontWeight? weight}) {
     return GoogleFonts.inter(
       fontSize: size,
       height: 1.35,
@@ -75,29 +86,26 @@ class FieldLog {
     );
   }
 
-  static TextStyle body({
-    double size = 14,
-    Color? color,
-    FontWeight? weight,
-  }) {
+  // Normal body text
+  static TextStyle body({double size = 14, Color? color, FontWeight? weight}) {
     return GoogleFonts.inter(
       fontSize: size,
-      height: 1.45,
+      height: 1.35,
       color: color ?? textPrimary,
       fontWeight: weight ?? FontWeight.w400,
     );
   }
 
   // ---------------------------------------------------------------------------
-  // Light theme
+  // Theme
   // ---------------------------------------------------------------------------
 
-  static ThemeData lightTheme() {
-    const background = Color(0xFFF7F7F8);
-    const surface = Color(0xFFFFFFFF);
-    const primaryText = Color(0xFF18191C);
-    const secondaryText = Color(0xFF6F727A);
-    const themeBorder = Color(0xFFE4E5E9);
+  static ThemeData themeData() {
+    const background = bgPage;
+    const surface = surfaceCard;
+    const primaryText = textPrimary;
+    const secondaryText = textSecondary;
+    const themeBorder = border;
 
     final scheme = ColorScheme.fromSeed(
       seedColor: accent,
@@ -105,10 +113,7 @@ class FieldLog {
       primary: accent,
       surface: surface,
       error: stageRejected,
-    ).copyWith(
-      onSurface: primaryText,
-      outline: themeBorder,
-    );
+    ).copyWith(onSurface: primaryText, outline: themeBorder);
 
     return _buildTheme(
       scheme: scheme,
@@ -121,43 +126,9 @@ class FieldLog {
     );
   }
 
-  // ---------------------------------------------------------------------------
-  // Dark theme
-  // ---------------------------------------------------------------------------
-
-  static ThemeData darkTheme() {
-    const background = Color(0xFF111214);
-    const surface = Color(0xFF191A1E);
-    const primaryText = Color(0xFFF3F3F5);
-    const secondaryText = Color(0xFFA5A7AE);
-    const themeBorder = Color(0xFF2B2D32);
-    const inputFill = Color(0xFF1D1E22);
-
-    final scheme = ColorScheme.fromSeed(
-      seedColor: accent,
-      brightness: Brightness.dark,
-      primary: const Color(0xFF8B93FF),
-      surface: surface,
-      error: const Color(0xFFFF7474),
-    ).copyWith(
-      onSurface: primaryText,
-      outline: themeBorder,
-    );
-
-    return _buildTheme(
-      scheme: scheme,
-      background: background,
-      surface: surface,
-      primaryText: primaryText,
-      secondaryText: secondaryText,
-      themeBorder: themeBorder,
-      inputFill: inputFill,
-    );
+  static ThemeData lightTheme() {
+    return themeData();
   }
-
-  // ---------------------------------------------------------------------------
-  // Shared theme
-  // ---------------------------------------------------------------------------
 
   static ThemeData _buildTheme({
     required ColorScheme scheme,
@@ -181,21 +152,19 @@ class FieldLog {
       textTheme: textTheme,
       dividerColor: themeBorder,
 
+      // Cards
       cardTheme: CardThemeData(
         color: surface,
         surfaceTintColor: Colors.transparent,
         elevation: 0,
         margin: EdgeInsets.zero,
         shape: RoundedRectangleBorder(
-          borderRadius: const BorderRadius.all(
-            Radius.circular(radiusCard),
-          ),
-          side: BorderSide(
-            color: themeBorder,
-          ),
+          borderRadius: const BorderRadius.all(Radius.circular(radiusCard)),
+          side: BorderSide(color: themeBorder),
         ),
       ),
 
+      // Bottom sheets
       bottomSheetTheme: BottomSheetThemeData(
         backgroundColor: surface,
         surfaceTintColor: Colors.transparent,
@@ -204,190 +173,121 @@ class FieldLog {
         elevation: 0,
         shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.vertical(
-            top: Radius.circular(24),
+            top: Radius.circular(radiusLarge),
           ),
         ),
         showDragHandle: true,
-        dragHandleColor: themeBorder,
-        dragHandleSize: const Size(36, 4),
       ),
 
-      dialogTheme: DialogThemeData(
-        backgroundColor: surface,
-        surfaceTintColor: Colors.transparent,
-        elevation: 8,
-        shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.all(
-            Radius.circular(radiusLarge),
-          ),
-        ),
-      ),
-
+      // Inputs
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
         fillColor: inputFill,
+        isDense: true,
         contentPadding: const EdgeInsets.symmetric(
-          horizontal: 14,
-          vertical: 14,
+          horizontal: 12,
+          vertical: 12,
         ),
-        labelStyle: GoogleFonts.inter(
-          fontSize: 13,
-          color: secondaryText,
-        ),
-        floatingLabelStyle: GoogleFonts.inter(
-          fontSize: 12,
-          color: secondaryText,
-          fontWeight: FontWeight.w500,
-        ),
-        hintStyle: GoogleFonts.inter(
-          fontSize: 13,
-          color: secondaryText,
-        ),
-        prefixIconColor: secondaryText,
-        suffixIconColor: secondaryText,
+        hintStyle: GoogleFonts.inter(fontSize: 13, color: secondaryText),
+        labelStyle: GoogleFonts.inter(fontSize: 13, color: secondaryText),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(radiusControl),
-          borderSide: BorderSide(
-            color: themeBorder,
-          ),
+          borderSide: BorderSide(color: themeBorder),
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(radiusControl),
-          borderSide: BorderSide(
-            color: themeBorder,
-          ),
+          borderSide: BorderSide(color: themeBorder),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(radiusControl),
-          borderSide: BorderSide(
-            color: scheme.primary,
-            width: 1.4,
-          ),
+          borderSide: BorderSide(color: primaryText),
         ),
         errorBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(radiusControl),
-          borderSide: BorderSide(
-            color: scheme.error,
-          ),
+          borderSide: const BorderSide(color: stageRejected),
         ),
         focusedErrorBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(radiusControl),
-          borderSide: BorderSide(
-            color: scheme.error,
-            width: 1.4,
-          ),
+          borderSide: const BorderSide(color: stageRejected),
         ),
       ),
 
+      // Elevated buttons
       elevatedButtonTheme: ElevatedButtonThemeData(
-        style: ButtonStyle(
-          elevation: const WidgetStatePropertyAll(0),
-          backgroundColor: WidgetStatePropertyAll(
-            scheme.primary,
-          ),
-          foregroundColor: WidgetStatePropertyAll(
-            scheme.onPrimary,
-          ),
-          padding: const WidgetStatePropertyAll(
-            EdgeInsets.symmetric(
-              horizontal: 18,
-              vertical: 14,
-            ),
-          ),
-          textStyle: WidgetStatePropertyAll(
-            GoogleFonts.inter(
-              fontSize: 13,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-          shape: WidgetStatePropertyAll(
-            RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(radiusControl),
-            ),
+        style: ElevatedButton.styleFrom(
+          elevation: 0,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(radiusControl),
           ),
         ),
       ),
 
+      // Outlined buttons
       outlinedButtonTheme: OutlinedButtonThemeData(
-        style: ButtonStyle(
-          foregroundColor: WidgetStatePropertyAll(
-            primaryText,
+        style: OutlinedButton.styleFrom(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(radiusControl),
           ),
-          padding: const WidgetStatePropertyAll(
-            EdgeInsets.symmetric(
-              horizontal: 18,
-              vertical: 14,
-            ),
-          ),
-          side: WidgetStatePropertyAll(
-            BorderSide(
-              color: themeBorder,
-            ),
-          ),
-          textStyle: WidgetStatePropertyAll(
-            GoogleFonts.inter(
-              fontSize: 13,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-          shape: WidgetStatePropertyAll(
-            RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(radiusControl),
-            ),
-          ),
+          side: BorderSide(color: themeBorder),
         ),
       ),
 
+      // Text buttons
       textButtonTheme: TextButtonThemeData(
-        style: ButtonStyle(
-          foregroundColor: WidgetStatePropertyAll(
-            primaryText,
-          ),
-          textStyle: WidgetStatePropertyAll(
-            GoogleFonts.inter(
-              fontSize: 13,
-              fontWeight: FontWeight.w600,
-            ),
+        style: TextButton.styleFrom(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(radiusControl),
           ),
         ),
       ),
 
-      floatingActionButtonTheme: FloatingActionButtonThemeData(
-        backgroundColor: scheme.primary,
-        foregroundColor: scheme.onPrimary,
-        elevation: 3,
-        focusElevation: 3,
-        hoverElevation: 5,
-        highlightElevation: 3,
-        shape: const CircleBorder(),
+      // Icon buttons
+      iconButtonTheme: IconButtonThemeData(
+        style: IconButton.styleFrom(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(radiusControl),
+          ),
+        ),
       ),
 
-      iconTheme: IconThemeData(
-        color: primaryText,
-        size: 20,
+      // Dialogs
+      dialogTheme: DialogThemeData(
+        backgroundColor: surface,
+        surfaceTintColor: Colors.transparent,
+        elevation: 0,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(radiusLarge),
+          side: BorderSide(color: themeBorder),
+        ),
       ),
 
+      // Menus
+      popupMenuTheme: PopupMenuThemeData(
+        color: surface,
+        surfaceTintColor: Colors.transparent,
+        elevation: 4,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(radiusCard),
+          side: BorderSide(color: themeBorder),
+        ),
+      ),
+
+      // Snackbars
+      snackBarTheme: SnackBarThemeData(
+        behavior: SnackBarBehavior.floating,
+        backgroundColor: primaryText,
+        contentTextStyle: GoogleFonts.inter(fontSize: 13, color: background),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(radiusControl),
+        ),
+      ),
+
+      // Dividers
       dividerTheme: DividerThemeData(
         color: themeBorder,
         thickness: 1,
         space: 1,
       ),
-
-      datePickerTheme: DatePickerThemeData(
-        backgroundColor: surface,
-        surfaceTintColor: Colors.transparent,
-        headerBackgroundColor: surface,
-        headerForegroundColor: primaryText,
-        dividerColor: themeBorder,
-        shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.all(
-            Radius.circular(radiusLarge),
-          ),
-        ),
-      ),
     );
   }
-
-  // Keep this so any old code that still calls themeData() doesn't break.
-  static ThemeData themeData() => lightTheme();
 }

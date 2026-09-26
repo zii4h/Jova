@@ -17,7 +17,9 @@ Future<void> showStageEditorSheet(
     backgroundColor: FieldLog.bgPage,
     shape: const RoundedRectangleBorder(
       borderRadius: BorderRadius.vertical(
-        top: Radius.circular(20),
+        top: Radius.circular(
+          FieldLog.radiusLarge,
+        ),
       ),
     ),
     builder: (_) => _StageEditorSheet(

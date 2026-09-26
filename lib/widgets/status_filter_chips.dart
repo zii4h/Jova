@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import '../models/application.dart';
 import '../theme/field_log_theme.dart';
 
@@ -27,10 +28,7 @@ class StatusFilterChips extends StatelessWidget {
         children: [
           _FilterChip(
             label: 'All',
-            count: counts.values.fold(
-              0,
-              (sum, count) => sum + count,
-            ),
+            count: counts.values.fold(0, (sum, count) => sum + count),
             active: selected == null,
             color: FieldLog.textPrimary,
             onTap: () => onSelect(null),
@@ -46,8 +44,7 @@ class StatusFilterChips extends StatelessWidget {
               color: order[i].color,
               onTap: () => onSelect(order[i]),
             ),
-            if (i != order.length - 1)
-              const SizedBox(width: 7),
+            if (i != order.length - 1) const SizedBox(width: 7),
           ],
         ],
       ),
@@ -78,29 +75,23 @@ class _FilterChip extends StatelessWidget {
         onTap: onTap,
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 140),
-          padding: const EdgeInsets.symmetric(
-            horizontal: 11,
-            vertical: 7,
+          padding: const EdgeInsets.fromLTRB(
+            12, // left
+            9, // top
+            12, // right
+            8, // bottom
           ),
           decoration: BoxDecoration(
             color: active ? color : Colors.transparent,
-            borderRadius: BorderRadius.circular(20),
-            border: Border.all(
-              color: active
-                  ? color
-                  : FieldLog.borderStrong,
-            ),
+            borderRadius: BorderRadius.circular(FieldLog.radiusControl),
+            border: Border.all(color: active ? color : FieldLog.borderStrong),
           ),
           child: Text(
             '$label · $count',
             style: FieldLog.body(
               size: 11,
-              color: active
-                  ? Colors.white
-                  : FieldLog.textSecondary,
-              weight: active
-                  ? FontWeight.w600
-                  : FontWeight.w500,
+              color: active ? Colors.white : FieldLog.textSecondary,
+              weight: active ? FontWeight.w600 : FontWeight.w500,
             ),
           ),
         ),

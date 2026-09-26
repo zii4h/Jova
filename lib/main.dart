@@ -20,7 +20,9 @@ Future<void> main() async {
       String.fromEnvironment('SUPABASE_URL');
 
   const supabasePublishableKey =
-      String.fromEnvironment('SUPABASE_PUBLISHABLE_KEY');
+      String.fromEnvironment(
+    'SUPABASE_PUBLISHABLE_KEY',
+  );
 
   if (supabaseUrl.isEmpty ||
       supabasePublishableKey.isEmpty) {
@@ -60,14 +62,16 @@ class AuthGate extends StatefulWidget {
   const AuthGate({super.key});
 
   @override
-  State<AuthGate> createState() => _AuthGateState();
+  State<AuthGate> createState() =>
+      _AuthGateState();
 }
 
 class _AuthGateState extends State<AuthGate> {
   final SupabaseClient _client =
       Supabase.instance.client;
 
-  StreamSubscription<AuthState>? _authSubscription;
+  StreamSubscription<AuthState>?
+      _authSubscription;
 
   Session? _session;
 
@@ -140,8 +144,10 @@ class _HomeShellState extends State<HomeShell> {
     ApplicationStatus.rejected,
   ];
 
-  Map<ApplicationStatus, String> _stageLabels = {
-    for (final status in ApplicationStatus.values)
+  Map<ApplicationStatus, String>
+      _stageLabels = {
+    for (final status
+        in ApplicationStatus.values)
       status: status.label,
   };
 
@@ -174,12 +180,15 @@ class _HomeShellState extends State<HomeShell> {
 
         if (stages.isNotEmpty) {
           _stageOrder = stages
-              .map((stage) => stage.status)
+              .map(
+                (stage) => stage.status,
+              )
               .toList();
 
           _stageLabels = {
             for (final stage in stages)
-              stage.status: stage.displayName,
+              stage.status:
+                  stage.displayName,
           };
         }
 
@@ -256,7 +265,9 @@ class _HomeShellState extends State<HomeShell> {
 
       setState(() {
         _applications = _applications
-            .where((app) => app.id != id)
+            .where(
+              (app) => app.id != id,
+            )
             .toList();
       });
     } catch (error) {
@@ -302,7 +313,8 @@ class _HomeShellState extends State<HomeShell> {
 
   Future<void> _signOut() async {
     try {
-      await Supabase.instance.client.auth.signOut();
+      await Supabase.instance.client.auth
+          .signOut();
     } catch (error) {
       if (!mounted) return;
 
@@ -313,7 +325,8 @@ class _HomeShellState extends State<HomeShell> {
   }
 
   void _showError(String message) {
-    ScaffoldMessenger.of(context).showSnackBar(
+    ScaffoldMessenger.of(context)
+        .showSnackBar(
       SnackBar(
         content: Text(message),
       ),
@@ -325,7 +338,7 @@ class _HomeShellState extends State<HomeShell> {
     if (_loading) {
       return Scaffold(
         backgroundColor: FieldLog.bgPage,
-        body: Center(
+        body: const Center(
           child: CircularProgressIndicator(
             color: FieldLog.textPrimary,
           ),
@@ -338,9 +351,11 @@ class _HomeShellState extends State<HomeShell> {
         backgroundColor: FieldLog.bgPage,
         body: Center(
           child: Padding(
-            padding: const EdgeInsets.all(24),
+            padding:
+                const EdgeInsets.all(24),
             child: Column(
-              mainAxisSize: MainAxisSize.min,
+              mainAxisSize:
+                  MainAxisSize.min,
               children: [
                 Text(
                   'Could not load Jova.',
@@ -348,20 +363,18 @@ class _HomeShellState extends State<HomeShell> {
                     size: 18,
                   ),
                 ),
-
                 const SizedBox(height: 8),
-
                 Text(
                   _error!,
-                  textAlign: TextAlign.center,
+                  textAlign:
+                      TextAlign.center,
                   style: FieldLog.body(
                     size: 12,
-                    color: FieldLog.textSecondary,
+                    color:
+                        FieldLog.textSecondary,
                   ),
                 ),
-
                 const SizedBox(height: 16),
-
                 OutlinedButton(
                   onPressed: () {
                     setState(() {
@@ -371,14 +384,14 @@ class _HomeShellState extends State<HomeShell> {
 
                     _loadData();
                   },
-                  child: const Text('Retry'),
+                  child:
+                      const Text('Retry'),
                 ),
-
                 const SizedBox(height: 8),
-
                 TextButton(
                   onPressed: _signOut,
-                  child: const Text('Sign out'),
+                  child:
+                      const Text('Sign out'),
                 ),
               ],
             ),
@@ -415,7 +428,7 @@ class _HomeShellState extends State<HomeShell> {
             children: screens,
           ),
 
-          // Account / logout
+          // Account
           Positioned(
             top: 18,
             right: 18,
@@ -426,6 +439,7 @@ class _HomeShellState extends State<HomeShell> {
             ),
           ),
 
+          // Add application
           if (_tabIndex == 0)
             Positioned(
               right: 24,
@@ -434,19 +448,22 @@ class _HomeShellState extends State<HomeShell> {
                 onTap: () {
                   showApplicationFormSheet(
                     context,
-                    onSave: _addApplication,
+                    onSave:
+                        _addApplication,
                   );
                 },
               ),
             ),
 
+          // Navigation
           Align(
-            alignment: Alignment.bottomCenter,
+            alignment:
+                Alignment.bottomCenter,
             child: FloatingDock(
               selectedIndex: _tabIndex,
-              onSelect: (i) {
+              onSelect: (index) {
                 setState(() {
-                  _tabIndex = i;
+                  _tabIndex = index;
                 });
               },
             ),
@@ -473,7 +490,8 @@ class _AccountButton extends StatelessWidget {
     final user =
         Supabase.instance.client.auth.currentUser;
 
-    final email = user?.email ?? 'Account';
+    final email =
+        user?.email ?? 'Account';
 
     return PopupMenuButton<String>(
       tooltip: 'Account',
@@ -484,8 +502,10 @@ class _AccountButton extends StatelessWidget {
       },
       color: FieldLog.surfaceCard,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-        side: BorderSide(
+        borderRadius: BorderRadius.circular(
+          FieldLog.radiusCard,
+        ),
+        side: const BorderSide(
           color: FieldLog.border,
         ),
       ),
@@ -494,13 +514,28 @@ class _AccountButton extends StatelessWidget {
           enabled: false,
           child: SizedBox(
             width: 210,
-            child: Text(
-              email,
-              overflow: TextOverflow.ellipsis,
-              style: FieldLog.body(
-                size: 12,
-                color: FieldLog.textSecondary,
-              ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  email,
+                  overflow: TextOverflow.ellipsis,
+                  style: FieldLog.body(
+                    size: 12,
+                    color: FieldLog.textPrimary,
+                    weight: FontWeight.w500,
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  'Signed in with Google',
+                  style: FieldLog.body(
+                    size: 10,
+                    color: FieldLog.textSecondary,
+                  ),
+                ),
+              ],
             ),
           ),
         ),
@@ -517,9 +552,7 @@ class _AccountButton extends StatelessWidget {
               Text(
                 'Sign out',
                 style: FieldLog.body(
-                  size: 12,
-                  color: FieldLog.textPrimary,
-                  weight: FontWeight.w600,
+                  size: 13,
                 ),
               ),
             ],
@@ -527,19 +560,22 @@ class _AccountButton extends StatelessWidget {
         ),
       ],
       child: Container(
-        width: 36,
-        height: 36,
+        width: 38,
+        height: 38,
         decoration: BoxDecoration(
           color: FieldLog.surfaceCard,
-          shape: BoxShape.circle,
+          borderRadius:
+              BorderRadius.circular(
+            FieldLog.radiusControl,
+          ),
           border: Border.all(
             color: FieldLog.border,
           ),
         ),
         alignment: Alignment.center,
-        child: Icon(
+        child: const Icon(
           Icons.person_outline_rounded,
-          size: 18,
+          size: 19,
           color: FieldLog.textPrimary,
         ),
       ),
@@ -570,35 +606,47 @@ class _AddButtonState
   @override
   Widget build(BuildContext context) {
     return MouseRegion(
-      cursor: SystemMouseCursors.click,
+      cursor:
+          SystemMouseCursors.click,
       onEnter: (_) {
-        setState(() => _hovering = true);
+        setState(() {
+          _hovering = true;
+        });
       },
       onExit: (_) {
-        setState(() => _hovering = false);
+        setState(() {
+          _hovering = false;
+        });
       },
       child: GestureDetector(
         onTap: widget.onTap,
         child: AnimatedContainer(
-          duration:
-              const Duration(milliseconds: 120),
+          duration: const Duration(
+            milliseconds: 120,
+          ),
           width: 52,
           height: 52,
           decoration: BoxDecoration(
             color: _hovering
                 ? FieldLog.textPrimary
                 : FieldLog.bgPage,
-            shape: BoxShape.circle,
+            borderRadius:
+                BorderRadius.circular(
+              FieldLog.radiusCard,
+            ),
             border: Border.all(
-              color: FieldLog.textPrimary,
+              color:
+                  FieldLog.textPrimary,
               width: 2,
             ),
             boxShadow: _hovering
                 ? const [
                     BoxShadow(
-                      color: Color(0x33000000),
+                      color:
+                          Color(0x33000000),
                       blurRadius: 8,
-                      offset: Offset(0, 2),
+                      offset:
+                          Offset(0, 2),
                     ),
                   ]
                 : const [],
