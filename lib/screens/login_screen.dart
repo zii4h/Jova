@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -14,6 +15,14 @@ class _LoginScreenState extends State<LoginScreen> {
   bool _loading = false;
   String? _error;
 
+  String get _redirectUrl {
+    if (kIsWeb) {
+      return Uri.base.toString();
+    }
+
+    return 'http://localhost:8080';
+  }
+
   Future<void> _signInWithGoogle() async {
     setState(() {
       _loading = true;
@@ -23,8 +32,10 @@ class _LoginScreenState extends State<LoginScreen> {
     try {
       await Supabase.instance.client.auth.signInWithOAuth(
         OAuthProvider.google,
-        redirectTo: 'http://localhost:8080',
-        queryParams: {'prompt': 'select_account'},
+        redirectTo: _redirectUrl,
+        queryParams: {
+          'prompt': 'select_account',
+        },
       );
     } catch (error) {
       if (!mounted) return;
@@ -45,14 +56,23 @@ class _LoginScreenState extends State<LoginScreen> {
           child: SingleChildScrollView(
             padding: const EdgeInsets.all(24),
             child: ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 400),
+              constraints: const BoxConstraints(
+                maxWidth: 400,
+              ),
               child: Container(
                 width: double.infinity,
-                padding: const EdgeInsets.fromLTRB(28, 32, 28, 28),
+                padding: const EdgeInsets.fromLTRB(
+                  28,
+                  32,
+                  28,
+                  28,
+                ),
                 decoration: BoxDecoration(
                   color: FieldLog.surfaceCard,
                   borderRadius: BorderRadius.circular(18),
-                  border: Border.all(color: FieldLog.border),
+                  border: Border.all(
+                    color: FieldLog.border,
+                  ),
                 ),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
@@ -82,11 +102,14 @@ class _LoginScreenState extends State<LoginScreen> {
                       width: double.infinity,
                       height: 48,
                       child: OutlinedButton(
-                        onPressed: _loading ? null : _signInWithGoogle,
+                        onPressed:
+                            _loading ? null : _signInWithGoogle,
                         style: OutlinedButton.styleFrom(
                           foregroundColor: FieldLog.textPrimary,
                           backgroundColor: FieldLog.surfaceCard,
-                          side: BorderSide(color: FieldLog.borderStrong),
+                          side: BorderSide(
+                            color: FieldLog.borderStrong,
+                          ),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(10),
                           ),
