@@ -8,87 +8,150 @@ class IndexCard extends StatelessWidget {
   final VoidCallback? onTap;
   final VoidCallback? onDelete;
 
-  const IndexCard({super.key, required this.application, this.onTap, this.onDelete});
+  const IndexCard({
+    super.key,
+    required this.application,
+    this.onTap,
+    this.onDelete,
+  });
 
   String _formatDate(DateTime d) {
-    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    const months = [
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec',
+    ];
+
     return '${months[d.month - 1]} ${d.day}';
   }
 
   @override
   Widget build(BuildContext context) {
-    // Dev note:
-    // Preview row only shows fields the user actually set (per-field, not
-    // all-or-nothing) — an application logged with just company/role still
-    // renders a clean card instead of empty icon rows.
     final previewChips = <Widget>[
       if (application.location.trim().isNotEmpty)
-        _PreviewChip(icon: Icons.place_outlined, label: application.location.trim()),
+        _PreviewChip(
+          icon: Icons.place_outlined,
+          label: application.location.trim(),
+        ),
       if (application.jobType.trim().isNotEmpty)
-        _PreviewChip(icon: Icons.work_outline_rounded, label: application.jobType.trim()),
+        _PreviewChip(
+          icon: Icons.work_outline_rounded,
+          label: application.jobType.trim(),
+        ),
       if (application.salary.trim().isNotEmpty)
-        _PreviewChip(icon: Icons.payments_outlined, label: application.salary.trim()),
+        _PreviewChip(
+          icon: Icons.payments_outlined,
+          label: application.salary.trim(),
+        ),
     ];
 
-    final card = InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(FieldLog.radiusCard),
-      child: Container(
-        margin: const EdgeInsets.only(bottom: FieldLog.space12),
-        padding: const EdgeInsets.all(14),
-        decoration: BoxDecoration(
-          color: FieldLog.surfaceCard,
-          border: Border.all(color: FieldLog.border),
+    final card = Padding(
+      padding: const EdgeInsets.only(bottom: 8),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: onTap,
           borderRadius: BorderRadius.circular(FieldLog.radiusCard),
-          boxShadow: const [BoxShadow(color: Color(0x14000000), offset: Offset(1, 2))],
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
+          child: Ink(
+            padding: const EdgeInsets.all(15),
+            decoration: BoxDecoration(
+              // Slightly darker than the page/card surface so individual
+              // applications remain visible when stacked.
+              color: const Color(0xFFF1F2F4).withValues(alpha: 0.78),
+              borderRadius: BorderRadius.circular(FieldLog.radiusCard),
+
+              // Very subtle edge instead of the old full card outline.
+              border: Border.all(
+                color: FieldLog.border.withValues(alpha: 0.65),
+              ),
+            ),
+            child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(application.company, style: FieldLog.display(size: 16)),
-                      const SizedBox(height: 2),
-                      Text(application.role, style: FieldLog.mono(size: 12)),
-                    ],
-                  ),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            application.company,
+                            style: FieldLog.display(
+                              size: 16,
+                              weight: FontWeight.w600,
+                            ),
+                          ),
+                          const SizedBox(height: 3),
+                          Text(
+                            application.role,
+                            style: FieldLog.body(
+                              size: 12,
+                              color: FieldLog.textSecondary,
+                              weight: FontWeight.w500,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    StatusStamp(status: application.status),
+                  ],
                 ),
-                const SizedBox(width: 8),
-                StatusStamp(status: application.status),
+
+                if (previewChips.isNotEmpty) ...[
+                  const SizedBox(height: 12),
+                  Wrap(spacing: 14, runSpacing: 7, children: previewChips),
+                ],
+
+                const SizedBox(height: 13),
+
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      'Applied ${_formatDate(application.appliedDate)}',
+                      style: FieldLog.body(
+                        size: 11,
+                        color: FieldLog.textSecondary,
+                        weight: FontWeight.w400,
+                      ),
+                    ),
+                    if (application.source.trim().isNotEmpty)
+                      Flexible(
+                        child: Text(
+                          application.source.trim(),
+                          overflow: TextOverflow.ellipsis,
+                          textAlign: TextAlign.right,
+                          style: FieldLog.body(
+                            size: 11,
+                            color: FieldLog.textSecondary,
+                            weight: FontWeight.w400,
+                          ),
+                        ),
+                      ),
+                  ],
+                ),
               ],
             ),
-            if (previewChips.isNotEmpty) ...[
-              const SizedBox(height: 10),
-              Wrap(spacing: 12, runSpacing: 6, children: previewChips),
-            ],
-            const SizedBox(height: 10),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text('applied ${_formatDate(application.appliedDate)}',
-                    style: FieldLog.mono(size: 11, color: FieldLog.textSecondary)),
-                if (application.source.isNotEmpty)
-                  Text(application.source,
-                      style: FieldLog.mono(size: 11, color: FieldLog.textSecondary)),
-              ],
-            ),
-          ],
+          ),
         ),
       ),
     );
 
-    if (onDelete == null) return card;
+    if (onDelete == null) {
+      return card;
+    }
 
-    // Dev note:
-    // Swipe-to-discard, gated behind a confirm dialog since it's
-    // destructive and there's no undo yet — no snackbar-with-undo to wire
-    // up until state is backed by something more durable than the
-    // in-memory list.
     return Dismissible(
       key: ValueKey(application.id),
       direction: DismissDirection.endToStart,
@@ -96,14 +159,18 @@ class IndexCard extends StatelessWidget {
       onDismissed: (_) => onDelete!.call(),
       background: const SizedBox.shrink(),
       secondaryBackground: Container(
-        margin: const EdgeInsets.only(bottom: FieldLog.space12),
+        margin: const EdgeInsets.only(bottom: 8),
         padding: const EdgeInsets.symmetric(horizontal: 20),
         alignment: Alignment.centerRight,
         decoration: BoxDecoration(
           color: FieldLog.stageRejected,
           borderRadius: BorderRadius.circular(FieldLog.radiusCard),
         ),
-        child: Text('discard', style: FieldLog.mono(size: 12, color: FieldLog.bgPage, weight: FontWeight.w600)),
+        child: const Icon(
+          Icons.delete_outline_rounded,
+          color: Colors.white,
+          size: 20,
+        ),
       ),
       child: card,
     );
@@ -114,21 +181,37 @@ class IndexCard extends StatelessWidget {
       context: context,
       builder: (ctx) => AlertDialog(
         backgroundColor: FieldLog.surfaceCard,
-        title: Text('discard entry?', style: FieldLog.display(size: 16)),
-        content: Text('this removes ${application.company} from the log for good.',
-            style: FieldLog.body(size: 13)),
+        title: Text(
+          'Discard entry?',
+          style: FieldLog.display(size: 16, weight: FontWeight.w600),
+        ),
+        content: Text(
+          'This removes ${application.company} from the log for good.',
+          style: FieldLog.body(size: 13),
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx, false),
-            child: Text('keep', style: FieldLog.mono(size: 12)),
+            child: Text(
+              'Keep',
+              style: FieldLog.body(size: 12, weight: FontWeight.w500),
+            ),
           ),
           TextButton(
             onPressed: () => Navigator.pop(ctx, true),
-            child: Text('discard', style: FieldLog.mono(size: 12, color: FieldLog.stageRejected)),
+            child: Text(
+              'Discard',
+              style: FieldLog.body(
+                size: 12,
+                color: FieldLog.stageRejected,
+                weight: FontWeight.w600,
+              ),
+            ),
           ),
         ],
       ),
     );
+
     return result ?? false;
   }
 }
@@ -145,8 +228,11 @@ class _PreviewChip extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         Icon(icon, size: 13, color: FieldLog.textSecondary),
-        const SizedBox(width: 3),
-        Text(label, style: FieldLog.mono(size: 11, color: FieldLog.textSecondary)),
+        const SizedBox(width: 4),
+        Text(
+          label,
+          style: FieldLog.body(size: 11, color: FieldLog.textSecondary),
+        ),
       ],
     );
   }

@@ -2,85 +2,106 @@ import 'package:flutter/material.dart';
 import '../models/application.dart';
 import '../theme/field_log_theme.dart';
 
-/// Dev note:
-/// Horizontal row of stage filter chips for the dashboard. `null` in
-/// [selected] means "all stages". Kept separate from StatusStamp since
-/// this reads as a tab control, not a per-entry stamp. Radius matches
-/// FieldLog.radiusControl (not a maxed-out pill) to stay consistent with
-/// the cards' minimal squareness.
 class StatusFilterChips extends StatelessWidget {
   final ApplicationStatus? selected;
-  final ValueChanged<ApplicationStatus?> onSelect;
   final Map<ApplicationStatus, int> counts;
+  final List<ApplicationStatus> order;
+  final Map<ApplicationStatus, String> labels;
+  final ValueChanged<ApplicationStatus?> onSelect;
 
   const StatusFilterChips({
     super.key,
     required this.selected,
-    required this.onSelect,
     required this.counts,
+    required this.order,
+    required this.labels,
+    required this.onSelect,
   });
 
   @override
   Widget build(BuildContext context) {
-    final total = counts.values.fold(0, (a, b) => a + b);
-    final chips = <Widget>[
-      _Chip(label: 'all', count: total, active: selected == null, onTap: () => onSelect(null)),
-      for (final status in ApplicationStatus.values)
-        _Chip(
-          label: status.label.toLowerCase(),
-          count: counts[status] ?? 0,
-          active: selected == status,
-          color: status.color,
-          onTap: () => onSelect(status),
-        ),
-    ];
-
     return SizedBox(
-      height: 32,
-      child: ListView.separated(
+      height: 34,
+      child: ListView(
         scrollDirection: Axis.horizontal,
-        itemCount: chips.length,
-        separatorBuilder: (_, __) => const SizedBox(width: 8),
-        itemBuilder: (_, i) => chips[i],
+        children: [
+          _FilterChip(
+            label: 'All',
+            count: counts.values.fold(
+              0,
+              (sum, count) => sum + count,
+            ),
+            active: selected == null,
+            color: FieldLog.textPrimary,
+            onTap: () => onSelect(null),
+          ),
+
+          const SizedBox(width: 7),
+
+          for (int i = 0; i < order.length; i++) ...[
+            _FilterChip(
+              label: labels[order[i]] ?? order[i].label,
+              count: counts[order[i]] ?? 0,
+              active: selected == order[i],
+              color: order[i].color,
+              onTap: () => onSelect(order[i]),
+            ),
+            if (i != order.length - 1)
+              const SizedBox(width: 7),
+          ],
+        ],
       ),
     );
   }
 }
 
-class _Chip extends StatelessWidget {
+class _FilterChip extends StatelessWidget {
   final String label;
   final int count;
   final bool active;
+  final Color color;
   final VoidCallback onTap;
-  final Color? color;
 
-  const _Chip({
+  const _FilterChip({
     required this.label,
     required this.count,
     required this.active,
+    required this.color,
     required this.onTap,
-    this.color,
   });
 
   @override
   Widget build(BuildContext context) {
-    final tint = color ?? FieldLog.textPrimary;
     return MouseRegion(
       cursor: SystemMouseCursors.click,
-      child: InkWell(
+      child: GestureDetector(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(FieldLog.radiusControl),
-        child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-          decoration: BoxDecoration(
-            color: active ? tint : Colors.transparent,
-            border: Border.all(color: tint),
-            borderRadius: BorderRadius.circular(FieldLog.radiusControl),
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 140),
+          padding: const EdgeInsets.symmetric(
+            horizontal: 11,
+            vertical: 7,
           ),
-          alignment: Alignment.center,
+          decoration: BoxDecoration(
+            color: active ? color : Colors.transparent,
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(
+              color: active
+                  ? color
+                  : FieldLog.borderStrong,
+            ),
+          ),
           child: Text(
             '$label · $count',
-            style: FieldLog.mono(size: 11, color: active ? FieldLog.bgPage : tint, weight: FontWeight.w600),
+            style: FieldLog.body(
+              size: 11,
+              color: active
+                  ? Colors.white
+                  : FieldLog.textSecondary,
+              weight: active
+                  ? FontWeight.w600
+                  : FontWeight.w500,
+            ),
           ),
         ),
       ),

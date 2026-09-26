@@ -28,3 +28,6 @@ Thumbs.db
 .idea/
 .vscode/*
 !.vscode/launch.json
+
+# Local environment values
+env.json

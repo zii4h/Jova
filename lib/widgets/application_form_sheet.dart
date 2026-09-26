@@ -1,12 +1,8 @@
 import 'package:flutter/material.dart';
+
 import '../models/application.dart';
 import '../theme/field_log_theme.dart';
 
-/// Dev note:
-/// Opens the guided add/edit form as a modal bottom sheet, split into a
-/// "Details" and "Recruiter" tab per the wireframe. [initialStatus] lets a
-/// caller (e.g. a stage group's quick-add) pre-set the stage for a new
-/// entry without pre-filling anything else.
 Future<void> showApplicationFormSheet(
   BuildContext context, {
   JobApplication? existing,
@@ -18,11 +14,15 @@ Future<void> showApplicationFormSheet(
     isScrollControlled: true,
     backgroundColor: FieldLog.bgPage,
     shape: const RoundedRectangleBorder(
-      borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+      borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
     ),
     builder: (ctx) => Padding(
       padding: EdgeInsets.only(bottom: MediaQuery.of(ctx).viewInsets.bottom),
-      child: _ApplicationForm(existing: existing, initialStatus: initialStatus, onSave: onSave),
+      child: _ApplicationForm(
+        existing: existing,
+        initialStatus: initialStatus,
+        onSave: onSave,
+      ),
     ),
   );
 }
@@ -32,7 +32,11 @@ class _ApplicationForm extends StatefulWidget {
   final ApplicationStatus? initialStatus;
   final void Function(JobApplication) onSave;
 
-  const _ApplicationForm({this.existing, this.initialStatus, required this.onSave});
+  const _ApplicationForm({
+    this.existing,
+    this.initialStatus,
+    required this.onSave,
+  });
 
   @override
   State<_ApplicationForm> createState() => _ApplicationFormState();
@@ -52,6 +56,7 @@ class _ApplicationFormState extends State<_ApplicationForm> {
   late final TextEditingController _recruiterEmail;
   late final TextEditingController _recruiterLinkedIn;
   late final TextEditingController _notes;
+
   late DateTime _date;
   DateTime? _lastContacted;
   late ApplicationStatus _status;
@@ -59,7 +64,9 @@ class _ApplicationFormState extends State<_ApplicationForm> {
   @override
   void initState() {
     super.initState();
+
     final e = widget.existing;
+
     _company = TextEditingController(text: e?.company ?? '');
     _role = TextEditingController(text: e?.role ?? '');
     _source = TextEditingController(text: e?.source ?? '');
@@ -67,10 +74,14 @@ class _ApplicationFormState extends State<_ApplicationForm> {
     _jobType = TextEditingController(text: e?.jobType ?? '');
     _salary = TextEditingController(text: e?.salary ?? '');
     _description = TextEditingController(text: e?.description ?? '');
+
     _recruiterName = TextEditingController(text: e?.recruiterName ?? '');
     _recruiterEmail = TextEditingController(text: e?.recruiterEmail ?? '');
-    _recruiterLinkedIn = TextEditingController(text: e?.recruiterLinkedIn ?? '');
+    _recruiterLinkedIn = TextEditingController(
+      text: e?.recruiterLinkedIn ?? '',
+    );
     _notes = TextEditingController(text: e?.notes ?? '');
+
     _date = e?.appliedDate ?? DateTime.now();
     _lastContacted = e?.lastContacted;
     _status = e?.status ?? widget.initialStatus ?? ApplicationStatus.applied;
@@ -89,19 +100,45 @@ class _ApplicationFormState extends State<_ApplicationForm> {
     _recruiterEmail.dispose();
     _recruiterLinkedIn.dispose();
     _notes.dispose();
+
     super.dispose();
   }
 
-  InputDecoration _decoration(String label) => InputDecoration(
-        labelText: label,
-        labelStyle: FieldLog.mono(size: 12),
-        filled: true,
-        fillColor: FieldLog.surfaceCard,
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(FieldLog.radiusControl),
-          borderSide: BorderSide(color: FieldLog.border),
-        ),
-      );
+  InputDecoration _decoration(String label) {
+    return InputDecoration(
+      labelText: label,
+
+      labelStyle: FieldLog.body(size: 12, color: FieldLog.textSecondary),
+
+      floatingLabelStyle: FieldLog.body(
+        size: 12,
+        color: FieldLog.textPrimary,
+        weight: FontWeight.w500,
+      ),
+
+      filled: true,
+      fillColor: FieldLog.surfaceCard,
+
+      contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 15),
+
+      // Important:
+      // Explicit borders keep the input boxes visible in every state.
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(FieldLog.radiusControl),
+        borderSide: const BorderSide(color: FieldLog.borderStrong, width: 1),
+      ),
+
+      enabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(FieldLog.radiusControl),
+        borderSide: const BorderSide(color: FieldLog.borderStrong, width: 1),
+      ),
+
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(FieldLog.radiusControl),
+        borderSide: const BorderSide(color: FieldLog.textPrimary, width: 1.4),
+      ),
+    );
+  }
 
   Future<void> _pickDate() async {
     final picked = await showDatePicker(
@@ -110,7 +147,10 @@ class _ApplicationFormState extends State<_ApplicationForm> {
       firstDate: DateTime(2020),
       lastDate: DateTime(2100),
     );
-    if (picked != null) setState(() => _date = picked);
+
+    if (picked != null) {
+      setState(() => _date = picked);
+    }
   }
 
   Future<void> _pickLastContacted() async {
@@ -120,15 +160,22 @@ class _ApplicationFormState extends State<_ApplicationForm> {
       firstDate: DateTime(2020),
       lastDate: DateTime(2100),
     );
-    if (picked != null) setState(() => _lastContacted = picked);
+
+    if (picked != null) {
+      setState(() => _lastContacted = picked);
+    }
   }
 
-  bool get _canSubmit => _company.text.trim().isNotEmpty && _role.text.trim().isNotEmpty;
+  bool get _canSubmit =>
+      _company.text.trim().isNotEmpty && _role.text.trim().isNotEmpty;
 
   void _submit() {
     if (!_canSubmit) return;
+
     final app = JobApplication(
-      id: widget.existing?.id ?? DateTime.now().millisecondsSinceEpoch.toString(),
+      id:
+          widget.existing?.id ??
+          DateTime.now().millisecondsSinceEpoch.toString(),
       company: _company.text.trim(),
       role: _role.text.trim(),
       appliedDate: _date,
@@ -144,6 +191,7 @@ class _ApplicationFormState extends State<_ApplicationForm> {
       recruiterLinkedIn: _recruiterLinkedIn.text.trim(),
       lastContacted: _lastContacted,
     );
+
     widget.onSave(app);
     Navigator.of(context).pop();
   }
@@ -156,63 +204,118 @@ class _ApplicationFormState extends State<_ApplicationForm> {
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
         children: [
+          // ---------------------------------------------------------------
+          // Header
+          // ---------------------------------------------------------------
+
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(widget.existing == null ? 'log new application' : 'edit application',
-                  style: FieldLog.display(size: 18)),
-              MouseRegion(
-                cursor: SystemMouseCursors.click,
-                child: GestureDetector(
-                  onTap: () => Navigator.of(context).pop(),
-                  behavior: HitTestBehavior.opaque,
-                  child: const Icon(Icons.close_rounded, size: 20),
-                ),
+              Text(
+                widget.existing == null
+                    ? 'Log new application'
+                    : 'Edit application',
+                style: FieldLog.display(size: 19, weight: FontWeight.w600),
+              ),
+              IconButton(
+                tooltip: 'Close',
+                onPressed: () => Navigator.of(context).pop(),
+                visualDensity: VisualDensity.compact,
+                icon: const Icon(Icons.close_rounded, size: 20),
               ),
             ],
           ),
-          const SizedBox(height: 16),
-          _TabToggle(index: _tab, onChanged: (i) => setState(() => _tab = i)),
-          const SizedBox(height: 16),
-          // Dev note:
-          // IndexedStack (not a rebuild-on-switch) so both tabs' fields —
-          // and their controllers — stay alive while hidden. Switching
-          // tabs must never lose what the user already typed.
+
+          const SizedBox(height: 18),
+
+          // ---------------------------------------------------------------
+          // Tabs
+          // ---------------------------------------------------------------
+          _TabToggle(
+            index: _tab,
+            onChanged: (i) {
+              setState(() => _tab = i);
+            },
+          ),
+
+          const SizedBox(height: 20),
+
+          // IndexedStack keeps data entered on either tab alive.
           IndexedStack(
             index: _tab,
             alignment: Alignment.topLeft,
-            children: [
-              _detailsTab(),
-              _recruiterTab(),
-            ],
+            children: [_detailsTab(), _recruiterTab()],
           ),
-          const SizedBox(height: 20),
+
+          const SizedBox(height: 24),
+
+          // ---------------------------------------------------------------
+          // Footer
+          // ---------------------------------------------------------------
           Row(
             children: [
               Expanded(
                 child: OutlinedButton(
                   onPressed: () => Navigator.of(context).pop(),
                   style: OutlinedButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(vertical: 14),
-                    side: BorderSide(color: FieldLog.border),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(FieldLog.radiusControl)),
+                    foregroundColor: FieldLog.textPrimary,
+                    backgroundColor: FieldLog.surfaceCard,
+                    padding: const EdgeInsets.symmetric(vertical: 15),
+                    side: const BorderSide(
+                      color: FieldLog.textPrimary,
+                      width: 1,
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(
+                        FieldLog.radiusControl,
+                      ),
+                    ),
                   ),
-                  child: Text('cancel', style: FieldLog.mono(size: 13)),
+                  child: Text(
+                    'Cancel',
+                    style: FieldLog.body(
+                      size: 13,
+                      color: FieldLog.textPrimary,
+                      weight: FontWeight.w600,
+                    ),
+                  ),
                 ),
               ),
+
               const SizedBox(width: 12),
+
               Expanded(
                 child: ElevatedButton(
                   onPressed: _canSubmit ? _submit : null,
                   style: ElevatedButton.styleFrom(
+                    elevation: 0,
                     backgroundColor: FieldLog.textPrimary,
-                    foregroundColor: FieldLog.bgPage,
-                    disabledBackgroundColor: FieldLog.border,
-                    padding: const EdgeInsets.symmetric(vertical: 14),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(FieldLog.radiusControl)),
+                    foregroundColor: Colors.white,
+
+                    disabledBackgroundColor: FieldLog.textPrimary.withValues(
+                      alpha: 0.25,
+                    ),
+
+                    disabledForegroundColor: Colors.white.withValues(
+                      alpha: 0.75,
+                    ),
+
+                    padding: const EdgeInsets.symmetric(vertical: 15),
+
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(
+                        FieldLog.radiusControl,
+                      ),
+                    ),
                   ),
-                  child: Text(widget.existing == null ? 'save entry' : 'save changes',
-                      style: FieldLog.mono(size: 13)),
+                  child: Text(
+                    widget.existing == null ? 'Save entry' : 'Save changes',
+                    style: FieldLog.body(
+                      size: 13,
+                      color: Colors.white,
+                      weight: FontWeight.w600,
+                    ),
+                  ),
                 ),
               ),
             ],
@@ -229,16 +332,22 @@ class _ApplicationFormState extends State<_ApplicationForm> {
       children: [
         TextField(
           controller: _role,
-          decoration: _decoration('job title'),
+          style: FieldLog.body(size: 13),
+          decoration: _decoration('Job title'),
           onChanged: (_) => setState(() {}),
         ),
+
         const SizedBox(height: 12),
+
         TextField(
           controller: _company,
-          decoration: _decoration('company'),
+          style: FieldLog.body(size: 13),
+          decoration: _decoration('Company'),
           onChanged: (_) => setState(() {}),
         ),
+
         const SizedBox(height: 12),
+
         Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -247,40 +356,89 @@ class _ApplicationFormState extends State<_ApplicationForm> {
                 onTap: _pickDate,
                 borderRadius: BorderRadius.circular(FieldLog.radiusControl),
                 child: InputDecorator(
-                  decoration: _decoration('applied date'),
+                  decoration: _decoration('Applied date'),
                   child: Text(
-                    '${_date.year}-${_date.month.toString().padLeft(2, '0')}-${_date.day.toString().padLeft(2, '0')}',
-                    style: FieldLog.mono(size: 13, color: FieldLog.textPrimary),
+                    _formatDate(_date),
+                    style: FieldLog.body(size: 13, color: FieldLog.textPrimary),
                   ),
                 ),
               ),
             ),
+
             const SizedBox(width: 12),
+
             Expanded(
               child: DropdownButtonFormField<ApplicationStatus>(
                 value: _status,
-                decoration: _decoration('status'),
+                decoration: _decoration('Status'),
+                style: FieldLog.body(size: 13, color: FieldLog.textPrimary),
+                dropdownColor: FieldLog.surfaceCard,
                 items: ApplicationStatus.values
-                    .map((s) => DropdownMenuItem(value: s, child: Text(s.label, style: FieldLog.mono(size: 12))))
+                    .map(
+                      (status) => DropdownMenuItem(
+                        value: status,
+                        child: Text(
+                          status.label,
+                          style: FieldLog.body(
+                            size: 12,
+                            color: FieldLog.textPrimary,
+                          ),
+                        ),
+                      ),
+                    )
                     .toList(),
-                onChanged: (v) => setState(() => _status = v ?? _status),
+                onChanged: (value) {
+                  setState(() {
+                    _status = value ?? _status;
+                  });
+                },
               ),
             ),
           ],
         ),
+
         const SizedBox(height: 12),
-        TextField(controller: _location, decoration: _decoration('location (optional)')),
+
+        TextField(
+          controller: _location,
+          style: FieldLog.body(size: 13),
+          decoration: _decoration('Location (optional)'),
+        ),
+
         const SizedBox(height: 12),
+
         TextField(
           controller: _jobType,
-          decoration: _decoration('job type (optional — e.g. internship, remote)'),
+          style: FieldLog.body(size: 13),
+          decoration: _decoration(
+            'Job type (optional — e.g. internship, remote)',
+          ),
         ),
+
         const SizedBox(height: 12),
-        TextField(controller: _salary, decoration: _decoration('salary (optional)')),
+
+        TextField(
+          controller: _salary,
+          style: FieldLog.body(size: 13),
+          decoration: _decoration('Salary (optional)'),
+        ),
+
         const SizedBox(height: 12),
-        TextField(controller: _source, decoration: _decoration('source (job board, referral...)')),
+
+        TextField(
+          controller: _source,
+          style: FieldLog.body(size: 13),
+          decoration: _decoration('Source (job board, referral...)'),
+        ),
+
         const SizedBox(height: 12),
-        TextField(controller: _description, decoration: _decoration('description (optional)'), maxLines: 3),
+
+        TextField(
+          controller: _description,
+          style: FieldLog.body(size: 13),
+          decoration: _decoration('Description (optional)'),
+          maxLines: 3,
+        ),
       ],
     );
   }
@@ -290,29 +448,65 @@ class _ApplicationFormState extends State<_ApplicationForm> {
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
       children: [
-        TextField(controller: _recruiterName, decoration: _decoration('recruiter name (optional)')),
+        TextField(
+          controller: _recruiterName,
+          style: FieldLog.body(size: 13),
+          decoration: _decoration('Recruiter name (optional)'),
+        ),
+
         const SizedBox(height: 12),
-        TextField(controller: _recruiterEmail, decoration: _decoration('email (optional)')),
+
+        TextField(
+          controller: _recruiterEmail,
+          style: FieldLog.body(size: 13),
+          keyboardType: TextInputType.emailAddress,
+          decoration: _decoration('Email (optional)'),
+        ),
+
         const SizedBox(height: 12),
-        TextField(controller: _recruiterLinkedIn, decoration: _decoration('linkedin url (optional)')),
+
+        TextField(
+          controller: _recruiterLinkedIn,
+          style: FieldLog.body(size: 13),
+          keyboardType: TextInputType.url,
+          decoration: _decoration('LinkedIn URL (optional)'),
+        ),
+
         const SizedBox(height: 12),
+
         InkWell(
           onTap: _pickLastContacted,
           borderRadius: BorderRadius.circular(FieldLog.radiusControl),
           child: InputDecorator(
-            decoration: _decoration('last contacted (optional)'),
+            decoration: _decoration('Last contacted (optional)'),
             child: Text(
-              _lastContacted == null
-                  ? 'not set'
-                  : '${_lastContacted!.year}-${_lastContacted!.month.toString().padLeft(2, '0')}-${_lastContacted!.day.toString().padLeft(2, '0')}',
-              style: FieldLog.mono(size: 13, color: FieldLog.textPrimary),
+              _lastContacted == null ? 'Not set' : _formatDate(_lastContacted!),
+              style: FieldLog.body(
+                size: 13,
+                color: _lastContacted == null
+                    ? FieldLog.textSecondary
+                    : FieldLog.textPrimary,
+              ),
             ),
           ),
         ),
+
         const SizedBox(height: 12),
-        TextField(controller: _notes, decoration: _decoration('notes (optional)'), maxLines: 3),
+
+        TextField(
+          controller: _notes,
+          style: FieldLog.body(size: 13),
+          decoration: _decoration('Notes (optional)'),
+          maxLines: 3,
+        ),
       ],
     );
+  }
+
+  String _formatDate(DateTime date) {
+    return '${date.year}-'
+        '${date.month.toString().padLeft(2, '0')}-'
+        '${date.day.toString().padLeft(2, '0')}';
   }
 }
 
@@ -327,14 +521,13 @@ class _TabToggle extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(3),
       decoration: BoxDecoration(
-        color: FieldLog.surfaceCard,
-        border: Border.all(color: FieldLog.border),
+        color: const Color(0xFFF1F2F4),
         borderRadius: BorderRadius.circular(FieldLog.radiusControl),
       ),
       child: Row(
         children: [
-          _segment(0, 'details', Icons.description_outlined),
-          _segment(1, 'recruiter', Icons.person_outline_rounded),
+          _segment(0, 'Details', Icons.description_outlined),
+          _segment(1, 'Recruiter', Icons.person_outline_rounded),
         ],
       ),
     );
@@ -342,6 +535,7 @@ class _TabToggle extends StatelessWidget {
 
   Widget _segment(int i, String label, IconData icon) {
     final active = i == index;
+
     return Expanded(
       child: MouseRegion(
         cursor: SystemMouseCursors.click,
@@ -350,18 +544,39 @@ class _TabToggle extends StatelessWidget {
           behavior: HitTestBehavior.opaque,
           child: AnimatedContainer(
             duration: const Duration(milliseconds: 150),
-            padding: const EdgeInsets.symmetric(vertical: 8),
+            padding: const EdgeInsets.symmetric(vertical: 9),
             decoration: BoxDecoration(
-              color: active ? FieldLog.textPrimary : Colors.transparent,
-              borderRadius: BorderRadius.circular(FieldLog.radiusControl - 1),
+              color: active ? FieldLog.surfaceCard : Colors.transparent,
+              borderRadius: BorderRadius.circular(FieldLog.radiusControl - 2),
+              boxShadow: active
+                  ? const [
+                      BoxShadow(
+                        color: Color(0x10000000),
+                        blurRadius: 4,
+                        offset: Offset(0, 1),
+                      ),
+                    ]
+                  : const [],
             ),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Icon(icon, size: 14, color: active ? FieldLog.bgPage : FieldLog.textSecondary),
+                Icon(
+                  icon,
+                  size: 15,
+                  color: active ? FieldLog.textPrimary : FieldLog.textSecondary,
+                ),
                 const SizedBox(width: 6),
-                Text(label,
-                    style: FieldLog.mono(size: 12, color: active ? FieldLog.bgPage : FieldLog.textSecondary)),
+                Text(
+                  label,
+                  style: FieldLog.body(
+                    size: 12,
+                    color: active
+                        ? FieldLog.textPrimary
+                        : FieldLog.textSecondary,
+                    weight: active ? FontWeight.w600 : FontWeight.w500,
+                  ),
+                ),
               ],
             ),
           ),
