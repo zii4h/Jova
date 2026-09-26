@@ -16,16 +16,13 @@ import 'screens/analytics_screen.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  const supabaseUrl =
-      String.fromEnvironment('SUPABASE_URL');
+  const supabaseUrl = String.fromEnvironment('SUPABASE_URL');
 
-  const supabasePublishableKey =
-      String.fromEnvironment(
+  const supabasePublishableKey = String.fromEnvironment(
     'SUPABASE_PUBLISHABLE_KEY',
   );
 
-  if (supabaseUrl.isEmpty ||
-      supabasePublishableKey.isEmpty) {
+  if (supabaseUrl.isEmpty || supabasePublishableKey.isEmpty) {
     throw Exception(
       'Missing Supabase environment variables. '
       'Run Jova with --dart-define-from-file=env.json',
@@ -62,16 +59,13 @@ class AuthGate extends StatefulWidget {
   const AuthGate({super.key});
 
   @override
-  State<AuthGate> createState() =>
-      _AuthGateState();
+  State<AuthGate> createState() => _AuthGateState();
 }
 
 class _AuthGateState extends State<AuthGate> {
-  final SupabaseClient _client =
-      Supabase.instance.client;
+  final SupabaseClient _client = Supabase.instance.client;
 
-  StreamSubscription<AuthState>?
-      _authSubscription;
+  StreamSubscription<AuthState>? _authSubscription;
 
   Session? _session;
 
@@ -81,8 +75,7 @@ class _AuthGateState extends State<AuthGate> {
 
     _session = _client.auth.currentSession;
 
-    _authSubscription =
-        _client.auth.onAuthStateChange.listen(
+    _authSubscription = _client.auth.onAuthStateChange.listen(
       (data) {
         if (!mounted) return;
 
@@ -91,9 +84,7 @@ class _AuthGateState extends State<AuthGate> {
         });
       },
       onError: (error, stackTrace) {
-        debugPrint(
-          'Supabase auth state error: $error',
-        );
+        debugPrint('Supabase auth state error: $error');
       },
     );
   }
@@ -110,9 +101,7 @@ class _AuthGateState extends State<AuthGate> {
       return const LoginScreen();
     }
 
-    return HomeShell(
-      key: ValueKey(_session!.user.id),
-    );
+    return HomeShell(key: ValueKey(_session!.user.id));
   }
 }
 
@@ -124,13 +113,11 @@ class HomeShell extends StatefulWidget {
   const HomeShell({super.key});
 
   @override
-  State<HomeShell> createState() =>
-      _HomeShellState();
+  State<HomeShell> createState() => _HomeShellState();
 }
 
 class _HomeShellState extends State<HomeShell> {
-  final SupabaseService _supabase =
-      SupabaseService();
+  final SupabaseService _supabase = SupabaseService();
 
   int _tabIndex = 0;
 
@@ -144,11 +131,8 @@ class _HomeShellState extends State<HomeShell> {
     ApplicationStatus.rejected,
   ];
 
-  Map<ApplicationStatus, String>
-      _stageLabels = {
-    for (final status
-        in ApplicationStatus.values)
-      status: status.label,
+  Map<ApplicationStatus, String> _stageLabels = {
+    for (final status in ApplicationStatus.values) status: status.label,
   };
 
   bool _loading = true;
@@ -167,11 +151,9 @@ class _HomeShellState extends State<HomeShell> {
         _supabase.getStages(),
       ]);
 
-      final applications =
-          results[0] as List<JobApplication>;
+      final applications = results[0] as List<JobApplication>;
 
-      final stages =
-          results[1] as List<StageConfig>;
+      final stages = results[1] as List<StageConfig>;
 
       if (!mounted) return;
 
@@ -179,16 +161,10 @@ class _HomeShellState extends State<HomeShell> {
         _applications = applications;
 
         if (stages.isNotEmpty) {
-          _stageOrder = stages
-              .map(
-                (stage) => stage.status,
-              )
-              .toList();
+          _stageOrder = stages.map((stage) => stage.status).toList();
 
           _stageLabels = {
-            for (final stage in stages)
-              stage.status:
-                  stage.displayName,
+            for (final stage in stages) stage.status: stage.displayName,
           };
         }
 
@@ -205,32 +181,23 @@ class _HomeShellState extends State<HomeShell> {
     }
   }
 
-  Future<void> _addApplication(
-    JobApplication app,
-  ) async {
+  Future<void> _addApplication(JobApplication app) async {
     try {
       await _supabase.addApplication(app);
 
       if (!mounted) return;
 
       setState(() {
-        _applications = [
-          ..._applications,
-          app,
-        ];
+        _applications = [..._applications, app];
       });
     } catch (error) {
       if (!mounted) return;
 
-      _showError(
-        'Could not save application.',
-      );
+      _showError('Could not save application.');
     }
   }
 
-  Future<void> _updateApplication(
-    JobApplication app,
-  ) async {
+  Future<void> _updateApplication(JobApplication app) async {
     try {
       await _supabase.updateApplication(app);
 
@@ -238,44 +205,29 @@ class _HomeShellState extends State<HomeShell> {
 
       setState(() {
         _applications = _applications
-            .map(
-              (existing) =>
-                  existing.id == app.id
-                      ? app
-                      : existing,
-            )
+            .map((existing) => existing.id == app.id ? app : existing)
             .toList();
       });
     } catch (error) {
       if (!mounted) return;
 
-      _showError(
-        'Could not update application.',
-      );
+      _showError('Could not update application.');
     }
   }
 
-  Future<void> _deleteApplication(
-    String id,
-  ) async {
+  Future<void> _deleteApplication(String id) async {
     try {
       await _supabase.deleteApplication(id);
 
       if (!mounted) return;
 
       setState(() {
-        _applications = _applications
-            .where(
-              (app) => app.id != id,
-            )
-            .toList();
+        _applications = _applications.where((app) => app.id != id).toList();
       });
     } catch (error) {
       if (!mounted) return;
 
-      _showError(
-        'Could not delete application.',
-      );
+      _showError('Could not delete application.');
     }
   }
 
@@ -284,53 +236,36 @@ class _HomeShellState extends State<HomeShell> {
     Map<ApplicationStatus, String> labels,
   ) async {
     try {
-      await _supabase.updateStages(
-        order,
-        labels,
-      );
+      await _supabase.updateStages(order, labels);
 
       if (!mounted) return;
 
       setState(() {
-        _stageOrder =
-            List<ApplicationStatus>.from(
-          order,
-        );
+        _stageOrder = List<ApplicationStatus>.from(order);
 
-        _stageLabels =
-            Map<ApplicationStatus, String>.from(
-          labels,
-        );
+        _stageLabels = Map<ApplicationStatus, String>.from(labels);
       });
     } catch (error) {
       if (!mounted) return;
 
-      _showError(
-        'Could not save stage changes.',
-      );
+      _showError('Could not save stage changes.');
     }
   }
 
   Future<void> _signOut() async {
     try {
-      await Supabase.instance.client.auth
-          .signOut();
+      await Supabase.instance.client.auth.signOut();
     } catch (error) {
       if (!mounted) return;
 
-      _showError(
-        'Could not sign out.',
-      );
+      _showError('Could not sign out.');
     }
   }
 
   void _showError(String message) {
-    ScaffoldMessenger.of(context)
-        .showSnackBar(
-      SnackBar(
-        content: Text(message),
-      ),
-    );
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(message)));
   }
 
   @override
@@ -339,9 +274,7 @@ class _HomeShellState extends State<HomeShell> {
       return Scaffold(
         backgroundColor: FieldLog.bgPage,
         body: const Center(
-          child: CircularProgressIndicator(
-            color: FieldLog.textPrimary,
-          ),
+          child: CircularProgressIndicator(color: FieldLog.textPrimary),
         ),
       );
     }
@@ -351,28 +284,16 @@ class _HomeShellState extends State<HomeShell> {
         backgroundColor: FieldLog.bgPage,
         body: Center(
           child: Padding(
-            padding:
-                const EdgeInsets.all(24),
+            padding: const EdgeInsets.all(24),
             child: Column(
-              mainAxisSize:
-                  MainAxisSize.min,
+              mainAxisSize: MainAxisSize.min,
               children: [
-                Text(
-                  'Could not load Jova.',
-                  style: FieldLog.display(
-                    size: 18,
-                  ),
-                ),
+                Text('Could not load Jova.', style: FieldLog.display(size: 18)),
                 const SizedBox(height: 8),
                 Text(
                   _error!,
-                  textAlign:
-                      TextAlign.center,
-                  style: FieldLog.body(
-                    size: 12,
-                    color:
-                        FieldLog.textSecondary,
-                  ),
+                  textAlign: TextAlign.center,
+                  style: FieldLog.body(size: 12, color: FieldLog.textSecondary),
                 ),
                 const SizedBox(height: 16),
                 OutlinedButton(
@@ -384,15 +305,10 @@ class _HomeShellState extends State<HomeShell> {
 
                     _loadData();
                   },
-                  child:
-                      const Text('Retry'),
+                  child: const Text('Retry'),
                 ),
                 const SizedBox(height: 8),
-                TextButton(
-                  onPressed: _signOut,
-                  child:
-                      const Text('Sign out'),
-                ),
+                TextButton(onPressed: _signOut, child: const Text('Sign out')),
               ],
             ),
           ),
@@ -410,33 +326,21 @@ class _HomeShellState extends State<HomeShell> {
         onUpdate: _updateApplication,
         onDelete: _deleteApplication,
       ),
-      CalendarScreen(
-        applications: _applications,
-        onUpdate: _updateApplication,
-      ),
-      AnalyticsScreen(
-        applications: _applications,
-      ),
+      CalendarScreen(applications: _applications, onUpdate: _updateApplication),
+      AnalyticsScreen(applications: _applications),
     ];
 
     return Scaffold(
       backgroundColor: FieldLog.bgPage,
       body: Stack(
         children: [
-          IndexedStack(
-            index: _tabIndex,
-            children: screens,
-          ),
+          IndexedStack(index: _tabIndex, children: screens),
 
           // Account
           Positioned(
             top: 18,
             right: 18,
-            child: SafeArea(
-              child: _AccountButton(
-                onSignOut: _signOut,
-              ),
-            ),
+            child: SafeArea(child: _AccountButton(onSignOut: _signOut)),
           ),
 
           // Add application
@@ -446,19 +350,14 @@ class _HomeShellState extends State<HomeShell> {
               bottom: 96,
               child: _AddButton(
                 onTap: () {
-                  showApplicationFormSheet(
-                    context,
-                    onSave:
-                        _addApplication,
-                  );
+                  showApplicationFormSheet(context, onSave: _addApplication);
                 },
               ),
             ),
 
           // Navigation
           Align(
-            alignment:
-                Alignment.bottomCenter,
+            alignment: Alignment.bottomCenter,
             child: FloatingDock(
               selectedIndex: _tabIndex,
               onSelect: (index) {
@@ -477,112 +376,243 @@ class _HomeShellState extends State<HomeShell> {
 // ============================================================
 // ACCOUNT BUTTON
 // ============================================================
-
-class _AccountButton extends StatelessWidget {
+class _AccountButton extends StatefulWidget {
   final Future<void> Function() onSignOut;
 
-  const _AccountButton({
-    required this.onSignOut,
-  });
+  const _AccountButton({required this.onSignOut});
+
+  @override
+  State<_AccountButton> createState() => _AccountButtonState();
+}
+
+class _AccountButtonState extends State<_AccountButton> {
+  final LayerLink _layerLink = LayerLink();
+
+  OverlayEntry? _overlayEntry;
+  bool _confirmSignOut = false;
+
+  bool get _isOpen => _overlayEntry != null;
+
+  void _toggleMenu() {
+    if (_isOpen) {
+      _closeMenu();
+    } else {
+      _openMenu();
+    }
+  }
+
+  void _openMenu() {
+    _confirmSignOut = false;
+
+    _overlayEntry = OverlayEntry(
+      builder: (context) {
+        return Stack(
+          children: [
+            // Click anywhere outside to close.
+            Positioned.fill(
+              child: GestureDetector(
+                behavior: HitTestBehavior.translucent,
+                onTap: _closeMenu,
+              ),
+            ),
+
+            CompositedTransformFollower(
+              link: _layerLink,
+              showWhenUnlinked: false,
+              targetAnchor: Alignment.bottomRight,
+              followerAnchor: Alignment.topRight,
+              offset: const Offset(0, 6),
+              child: Material(
+                color: Colors.transparent,
+                child: StatefulBuilder(
+                  builder: (context, setMenuState) {
+                    return Container(
+                      width: 270,
+                      decoration: BoxDecoration(
+                        color: FieldLog.surfaceCard,
+                        borderRadius: BorderRadius.circular(
+                          FieldLog.radiusCard,
+                        ),
+                        border: Border.all(color: FieldLog.border),
+                        boxShadow: const [
+                          BoxShadow(
+                            color: Color(0x26000000),
+                            blurRadius: 12,
+                            spreadRadius: 1,
+                            offset: Offset(0, 4),
+                          ),
+                        ],
+                      ),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          // Account header
+                          SizedBox(
+                            height: 62,
+                            child: Stack(
+                              children: [
+                                Positioned(
+                                  left: 14,
+                                  top: 11,
+                                  right: 46,
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        Supabase
+                                                .instance
+                                                .client
+                                                .auth
+                                                .currentUser
+                                                ?.email ??
+                                            'Account',
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                        style: FieldLog.body(
+                                          size: 12,
+                                          color: FieldLog.textPrimary,
+                                          weight: FontWeight.w500,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 2),
+                                      Text(
+                                        'Signed in with Google',
+                                        style: FieldLog.body(
+                                          size: 10,
+                                          color: FieldLog.textSecondary,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+
+                                // Close button pinned to FRAME
+                                Positioned(
+                                  top: 6,
+                                  right: 6,
+                                  child: InkWell(
+                                    onTap: _closeMenu,
+                                    borderRadius: BorderRadius.circular(6),
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(7),
+                                      child: Icon(
+                                        Icons.close_rounded,
+                                        size: 17,
+                                        color: FieldLog.textSecondary,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+
+                          const Divider(height: 1),
+
+                          // Sign-out / confirmation
+                          InkWell(
+                            onTap: () async {
+                              if (!_confirmSignOut) {
+                                setMenuState(() {
+                                  _confirmSignOut = true;
+                                });
+                                return;
+                              }
+
+                              _closeMenu();
+                              await widget.onSignOut();
+                            },
+                            child: SizedBox(
+                              height: 48,
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 14,
+                                ),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.end,
+                                  children: [
+                                    Text(
+                                      _confirmSignOut
+                                          ? 'Are you sure?'
+                                          : 'Sign out',
+                                      style: FieldLog.body(
+                                        size: 13,
+                                        color: _confirmSignOut
+                                            ? FieldLog.stageRejected
+                                            : FieldLog.textSecondary,
+                                        weight: _confirmSignOut
+                                            ? FontWeight.w500
+                                            : FontWeight.w400,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
+                  },
+                ),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+
+    Overlay.of(context).insert(_overlayEntry!);
+
+    setState(() {});
+  }
+
+  void _closeMenu() {
+    _overlayEntry?.remove();
+    _overlayEntry = null;
+    _confirmSignOut = false;
+
+    if (mounted) {
+      setState(() {});
+    }
+  }
+
+  @override
+  void dispose() {
+    _overlayEntry?.remove();
+    _overlayEntry = null;
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
-    final user =
-        Supabase.instance.client.auth.currentUser;
-
-    final email =
-        user?.email ?? 'Account';
-
-    return PopupMenuButton<String>(
-      tooltip: 'Account',
-      onSelected: (value) {
-        if (value == 'logout') {
-          onSignOut();
-        }
-      },
-      color: FieldLog.surfaceCard,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(
-          FieldLog.radiusCard,
-        ),
-        side: const BorderSide(
-          color: FieldLog.border,
-        ),
-      ),
-      itemBuilder: (context) => [
-        PopupMenuItem<String>(
-          enabled: false,
-          child: SizedBox(
-            width: 210,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  email,
-                  overflow: TextOverflow.ellipsis,
-                  style: FieldLog.body(
-                    size: 12,
-                    color: FieldLog.textPrimary,
-                    weight: FontWeight.w500,
-                  ),
-                ),
-                const SizedBox(height: 2),
-                Text(
-                  'Signed in with Google',
-                  style: FieldLog.body(
-                    size: 10,
-                    color: FieldLog.textSecondary,
-                  ),
-                ),
-              ],
+    return CompositedTransformTarget(
+      link: _layerLink,
+      child: MouseRegion(
+        cursor: SystemMouseCursors.click,
+        child: GestureDetector(
+          onTap: _toggleMenu,
+          child: Container(
+            width: 38,
+            height: 38,
+            decoration: BoxDecoration(
+              color: FieldLog.surfaceCard,
+              borderRadius: BorderRadius.circular(FieldLog.radiusControl),
+              border: Border.all(color: FieldLog.border),
+            ),
+            alignment: Alignment.center,
+            child: const Icon(
+              Icons.person_outline_rounded,
+              size: 19,
+              color: FieldLog.textPrimary,
             ),
           ),
-        ),
-        const PopupMenuDivider(),
-        PopupMenuItem<String>(
-          value: 'logout',
-          child: Row(
-            children: [
-              const Icon(
-                Icons.logout_rounded,
-                size: 17,
-              ),
-              const SizedBox(width: 10),
-              Text(
-                'Sign out',
-                style: FieldLog.body(
-                  size: 13,
-                ),
-              ),
-            ],
-          ),
-        ),
-      ],
-      child: Container(
-        width: 38,
-        height: 38,
-        decoration: BoxDecoration(
-          color: FieldLog.surfaceCard,
-          borderRadius:
-              BorderRadius.circular(
-            FieldLog.radiusControl,
-          ),
-          border: Border.all(
-            color: FieldLog.border,
-          ),
-        ),
-        alignment: Alignment.center,
-        child: const Icon(
-          Icons.person_outline_rounded,
-          size: 19,
-          color: FieldLog.textPrimary,
         ),
       ),
     );
   }
 }
-
 // ============================================================
 // ADD BUTTON
 // ============================================================
@@ -590,24 +620,19 @@ class _AccountButton extends StatelessWidget {
 class _AddButton extends StatefulWidget {
   final VoidCallback onTap;
 
-  const _AddButton({
-    required this.onTap,
-  });
+  const _AddButton({required this.onTap});
 
   @override
-  State<_AddButton> createState() =>
-      _AddButtonState();
+  State<_AddButton> createState() => _AddButtonState();
 }
 
-class _AddButtonState
-    extends State<_AddButton> {
+class _AddButtonState extends State<_AddButton> {
   bool _hovering = false;
 
   @override
   Widget build(BuildContext context) {
     return MouseRegion(
-      cursor:
-          SystemMouseCursors.click,
+      cursor: SystemMouseCursors.click,
       onEnter: (_) {
         setState(() {
           _hovering = true;
@@ -621,32 +646,19 @@ class _AddButtonState
       child: GestureDetector(
         onTap: widget.onTap,
         child: AnimatedContainer(
-          duration: const Duration(
-            milliseconds: 120,
-          ),
+          duration: const Duration(milliseconds: 120),
           width: 52,
           height: 52,
           decoration: BoxDecoration(
-            color: _hovering
-                ? FieldLog.textPrimary
-                : FieldLog.bgPage,
-            borderRadius:
-                BorderRadius.circular(
-              FieldLog.radiusCard,
-            ),
-            border: Border.all(
-              color:
-                  FieldLog.textPrimary,
-              width: 2,
-            ),
+            color: _hovering ? FieldLog.textPrimary : FieldLog.bgPage,
+            borderRadius: BorderRadius.circular(FieldLog.radiusCard),
+            border: Border.all(color: FieldLog.textPrimary, width: 2),
             boxShadow: _hovering
                 ? const [
                     BoxShadow(
-                      color:
-                          Color(0x33000000),
+                      color: Color(0x33000000),
                       blurRadius: 8,
-                      offset:
-                          Offset(0, 2),
+                      offset: Offset(0, 2),
                     ),
                   ]
                 : const [],
@@ -655,9 +667,7 @@ class _AddButtonState
           child: Icon(
             Icons.add_rounded,
             size: 26,
-            color: _hovering
-                ? FieldLog.bgPage
-                : FieldLog.textPrimary,
+            color: _hovering ? FieldLog.bgPage : FieldLog.textPrimary,
           ),
         ),
       ),

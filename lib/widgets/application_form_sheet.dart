@@ -15,15 +15,11 @@ Future<void> showApplicationFormSheet(
     backgroundColor: FieldLog.bgPage,
     shape: const RoundedRectangleBorder(
       borderRadius: BorderRadius.vertical(
-        top: Radius.circular(
-          FieldLog.radiusLarge,
-        ),
+        top: Radius.circular(FieldLog.radiusLarge),
       ),
     ),
     builder: (ctx) => Padding(
-      padding: EdgeInsets.only(
-        bottom: MediaQuery.of(ctx).viewInsets.bottom,
-      ),
+      padding: EdgeInsets.only(bottom: MediaQuery.of(ctx).viewInsets.bottom),
       child: _ApplicationForm(
         existing: existing,
         initialStatus: initialStatus,
@@ -53,16 +49,16 @@ class _ApplicationFormState extends State<_ApplicationForm> {
 
   String _currency = 'PHP';
 
-static const List<String> _currencies = [
-  'PHP',
-  'USD',
-  'EUR',
-  'GBP',
-  'JPY',
-  'AUD',
-  'CAD',
-  'SGD',
-];
+  static const List<String> _currencies = [
+    'PHP',
+    'USD',
+    'EUR',
+    'GBP',
+    'JPY',
+    'AUD',
+    'CAD',
+    'SGD',
+  ];
 
   late final TextEditingController _company;
   late final TextEditingController _role;
@@ -203,10 +199,10 @@ static const List<String> _currencies = [
       notes: _notes.text.trim(),
       location: _location.text.trim(),
       jobType: _jobType.text.trim(),
-      
+
       salary: _salary.text.trim().isEmpty
-    ? ''
-    : '$_currency ${_salary.text.trim()}',
+          ? ''
+          : '$_currency ${_salary.text.trim()}',
 
       description: _description.text.trim(),
       recruiterName: _recruiterName.text.trim(),
@@ -443,9 +439,7 @@ static const List<String> _currencies = [
         TextField(
           controller: _salary,
           style: FieldLog.body(size: 13),
-          keyboardType: const TextInputType.numberWithOptions(
-            decimal: true,
-          ),
+          keyboardType: const TextInputType.numberWithOptions(decimal: true),
           decoration: _decoration('Salary (optional)').copyWith(
             suffixIcon: Padding(
               padding: const EdgeInsets.only(right: 8),
@@ -453,10 +447,7 @@ static const List<String> _currencies = [
                 child: DropdownButton<String>(
                   value: _currency,
                   dropdownColor: FieldLog.surfaceCard,
-                  icon: const Icon(
-                    Icons.keyboard_arrow_down_rounded,
-                    size: 17,
-                  ),
+                  icon: const Icon(Icons.keyboard_arrow_down_rounded, size: 17),
                   style: FieldLog.body(
                     size: 12,
                     color: FieldLog.textPrimary,
@@ -480,9 +471,7 @@ static const List<String> _currencies = [
                 ),
               ),
             ),
-            suffixIconConstraints: const BoxConstraints(
-              minWidth: 76,
-            ),
+            suffixIconConstraints: const BoxConstraints(minWidth: 76),
           ),
         ),
 

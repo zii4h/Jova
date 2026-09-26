@@ -45,6 +45,8 @@ class SupabaseService {
         role: row['role'] ?? '',
         appliedDate: DateTime.parse(row['applied_date']),
         status: _statusFromString(row['status']),
+        highestStageReached:
+            _stageFromString(row['highest_stage_reached']),
         source: row['source'] ?? '',
         notes: row['notes'] ?? '',
         location: row['location'] ?? '',
@@ -192,6 +194,7 @@ class SupabaseService {
       'role': app.role,
       'applied_date': _dateOnly(app.appliedDate),
       'status': app.status.name,
+      'highest_stage_reached': app.highestStageReached.name,
       'source': app.source,
       'notes': app.notes,
       'location': app.location,
@@ -201,8 +204,9 @@ class SupabaseService {
       'recruiter_name': app.recruiterName,
       'recruiter_email': app.recruiterEmail,
       'recruiter_linkedin': app.recruiterLinkedIn,
-      'last_contacted':
-          app.lastContacted == null ? null : _dateOnly(app.lastContacted!),
+      'last_contacted': app.lastContacted == null
+          ? null
+          : _dateOnly(app.lastContacted!),
     };
   }
 
@@ -218,6 +222,15 @@ class SupabaseService {
     return ApplicationStatus.values.firstWhere(
       (item) => item.name == status,
       orElse: () => ApplicationStatus.applied,
+    );
+  }
+
+  ApplicationStage _stageFromString(dynamic value) {
+    final stage = value?.toString();
+
+    return ApplicationStage.values.firstWhere(
+      (item) => item.name == stage,
+      orElse: () => ApplicationStage.applied,
     );
   }
 }

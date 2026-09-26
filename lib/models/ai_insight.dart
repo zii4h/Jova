@@ -1,8 +1,7 @@
-/// Dev note:
-/// Structured shape for a single AI-generated field analysis. Kept separate
-/// from JobApplication since this is derived commentary, not source data —
-/// it's never persisted, just regenerated on demand from whatever the
-/// tracker currently looks like.
+/// Structured result returned by Jova's field analysis.
+///
+/// This is derived commentary and is never persisted.
+/// It is regenerated on demand from the user's current application data.
 class AiInsight {
   final String headline;
   final List<String> observations;
@@ -17,16 +16,22 @@ class AiInsight {
   });
 
   factory AiInsight.fromJson(Map<String, dynamic> json) {
+    final rawHeadline = json['headline']?.toString().trim() ?? '';
+    final rawNextMove = json['next_move']?.toString().trim() ?? '';
+
+    final observations = (json['observations'] as List?)
+            ?.map((item) => item.toString().trim())
+            .where((item) => item.isNotEmpty)
+            .take(4)
+            .toList() ??
+        <String>[];
+
     return AiInsight(
-      headline: (json['headline'] as String?)?.trim().isNotEmpty == true
-          ? (json['headline'] as String).trim()
+      headline: rawHeadline.isNotEmpty
+          ? rawHeadline
           : 'No clear read on the data yet.',
-      observations: (json['observations'] as List?)
-              ?.map((e) => e.toString().trim())
-              .where((s) => s.isNotEmpty)
-              .toList() ??
-          const [],
-      nextMove: (json['next_move'] as String?)?.trim() ?? '',
+      observations: observations,
+      nextMove: rawNextMove,
       generatedAt: DateTime.now(),
     );
   }
