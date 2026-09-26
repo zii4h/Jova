@@ -1,129 +1,181 @@
-# Jova
+# J O V A 
+> *Track Every Step of Your Job Search*
 
-> A mobile-first job application tracker with a built-in conversion-funnel and
-> source-breakdown analyst, for job seekers tired of spreadsheets.
+Jova is a mobile-first job application tracker built for job seekers who want a simpler way to keep track of where they've applied and what happens next.
 
-**Live demo:** https://zii4h.github.io/Jova/ *(still work in progress)* 🛠️ <br>
-**Demo video:** *(to be added soon)* 🛠️ <br>
-**Course:** Applications Development and Emerging Technologies (6ADET), Holy Angel University <br>
-**Author:** zii4h
+Instead of maintaining a spreadsheet, Jova gives you one place to log applications, follow their progress, revisit important dates, and understand how your job search is going.
 
 > [!IMPORTANT]
-> This repository is public for academic and portfolio purposes. It does not
-contain real applicant or employer data, credentials, API keys, or other
-private information.
+> This repository is public for academic and portfolio purposes. It does not contain real applicant or employer data, credentials, API keys, or other private information.
+
+- **Live demo:** https://zii4h.github.io/Jova/ <br>
+- **Demo video:** *(to be added soon)* 🛠️ <br>
+- **Course:** Applications Development and Emerging Technologies (6ADET), Holy Angel University <br>
+- **Author:** zii4h
 
 
+## PREVIEW
+
+| Dashboard, Calendar, Analytics |
+| --- |
+| <img width="2000" height="1414" alt="Jova Dashboard, Calendar, and Analytics" src="https://github.com/user-attachments/assets/35feb8bd-023a-4df9-ac99-79810b785ded" /><br><br><img width="2000" height="1414" alt="Jova Dashboard, Calendar, and Analytics" src="https://github.com/user-attachments/assets/5828b852-d826-4461-af74-a90f56793adf" /> |
+
+## WHAT YOU CAN DO WITH JOVA
+
+⭐ Keep track of every application statuses
+
+- Save the important details of each job application, including the company, position, status, source, salary, location, notes, and recruiter information.
+
+⭐ Follow applications as they progress
+
+- Applications are grouped and searchable into the default five statuses which you can modify yourself:
+
+- `Applied` → `Screening` → `Interview` → `Offer` / `Rejected`
+
+⭐ Understand your progress
+
+- Analytics turns your application history into a conversion funnel, showing how many applications are making it from Applied to Screening, Interview, and Offer.
+
+⭐ Find where your applications come from
+
+- Source Breakdown shows where you're finding opportunities, making it easier to compare sources such as LinkedIn, job boards, company websites, and referrals.
+
+⭐ Get a second look at your job search
+
+- Field Analysis uses Artificial Intelligence to look at your application activity and provide observations and suggested next actions.
+
+⭐ Your applications stay with your account
+
+- Sign in with Google to access your own Jova workspace. Applications and preferences are kept separate between accounts.
 
 ---
 
-## Screenshots
+## HOW TO USE
 
-Screenshots will be added to `docs/assets/` as the application reaches a
-presentable state.
+1. Sign in using **Continue with Google**.
+2. Select **Add Application** to log a job application.
+3. Update its status as it moves through the hiring process.
+4. Use the **Dashboard** to search, filter, edit, or review applications.
+5. Open **Calendar** to view and keep track of applications by date.
+6. Open **Analytics** to see your conversion funnel, source breakdown, and Field Analysis.
 
-<!--
-| Dashboard | Calendar | Analytics |
-| --- | --- | --- |
-| ![Dashboard](docs/assets/screen-dashboard.png) | ![Calendar](docs/assets/screen-calendar.png) | ![Analytics](docs/assets/screen-analytics.png) |
--->
+---
 
-## What it does 
+## RUNNING JOVA LOCALLY
 
-- **Log Applications:** Users log job applications with company, role, status, and source, plus optional location, job type, salary, description, and recruiter contact details.
-- **Organize & Search:** Users group applications by stage on the Dashboard, utilizing search and per-stage filtering.
-- **Track via Calendar:** Users view application history through a Calendar view, tapping any date to see what was logged that day.
-- **Analyze Progress:** Users compute conversion funnels and source breakdowns locally on the Analytics screen, with an optional AI field-analysis panel (Gemini) on top.
+### Requirements
 
-## Application statuses
+Jova was developed with:
 
-Jova tracks applications through five stages:
+- Flutter 3.41.9
+- Dart
+- Supabase
 
-`Applied` → `Screening` → `Interview` → `Offer` / `Rejected`
+Clone the repository:
 
-## Built with
+~~~bash
+git clone https://github.com/zii4h/Jova.git
+cd Jova
+~~~
 
-|  |  |
-| --- | --- |
-| Framework | Flutter (Dart) |
-| State | `setState` (no external state package) |
-| Storage | `sqflite`, local to the device/browser |
-| UI | Material widgets with a custom Field Log design system |
-| Other packages | `google_fonts` (Special Elite / JetBrains Mono / Inter), `http` (Gemini API calls), `device_preview` (phone-frame preview on the deployed link) |
+Install the dependencies:
 
-## Running it yourself
-
-```bash
+~~~bash
 flutter pub get
-flutter run
-```
+~~~
 
-To run the web version locally:
+Create an `env.json` file in the project root:
 
-```bash
-flutter run -d web-server --web-port 8080
-```
+~~~json
+{
+  "SUPABASE_URL": "your_supabase_project_url",
+  "SUPABASE_PUBLISHABLE_KEY": "your_supabase_publishable_key"
+}
+~~~
 
-Then open `http://localhost:8080`. Check your Flutter installation with
-`flutter --version`.
+Then run:
 
+~~~bash
+flutter run -d chrome --web-port=8080 --dart-define-from-file=env.json
+~~~
 
-## Environment Variables
+The login screen should appear once the application starts successfully.
 
-Pass `GEMINI_API_KEY` via `--dart-define` at runtime to enable AI insights on the Analytics screen:
+---
 
-```bash
-flutter run -d web-server --web-port 8080 --dart-define=GEMINI_API_KEY=your_key_here
-```
+## STRUCTURE
 
-Get a key at https://aistudio.google.com/apikey. No API keys or other secrets
-are committed to this repository, and this value is not passed to the
-deployed web build.
+~~~text
+lib/
+├── main.dart
+├── models/
+├── screens/
+├── services/
+├── theme/
+└── widgets/
+~~~
 
-## Privacy and secrets
+- `models/` — application data models and statuses
+- `screens/` — Dashboard, Calendar, and Analytics screens
+- `services/` — database and external service communication
+- `theme/` — Jova's visual design system
+- `widgets/` — reusable interface components
 
-All job records stay entirely local via `sqflite` with zero server syncing. `GEMINI_API_KEY` is excluded from the web build because `--dart-define` compiles into public JS (the live demo shows the "no-key" fallback; check the demo video for the real feature). All sample data is completely fabricated.
+Additional project documentation is available in [`docs/`](docs/).
 
-## Project documentation
+---
 
-| Document | |
+## PRIVACY & SECURITY
+
+Jova uses Google authentication through Supabase. Each account can only access its own application data.
+
+Gemini-powered Field Analysis is handled through a **Supabase Edge Function** rather than directly inside the Flutter application. The Gemini API key is stored as a server-side secret and is not included in the public web build.
+
+---
+
+## KNOWN ISSUES & WHAT'S NEXT
+
+Jova is currently in active development as a final project.
+
+- Continue testing across mobile and desktop layouts
+- Complete final UI polish
+- Update final screenshots
+- Complete the demo video
+- Continue testing authentication and application data handling
+
+---
+
+## DOCUMENTATION
+
+| Document | Description |
 | --- | --- |
-| [Proposal](docs/01-proposal.md) | The problem, users, and project scope |
-| [Mockup and wireframes](docs/02-mockup.md) | Interface design and screen flow |
-| [Design system](docs/03-design-system.md) | Colors, typography, spacing, and components |
+| [Proposal](docs/01-proposal.md) | The idea and problem behind Jova |
+| [Mockup and wireframes](docs/02-mockup.md) | Early interface design and screen flow |
+| [Design system](docs/03-design-system.md) | Jova's visual system |
 | [Weekly reports](docs/04-weekly-reports.md) | Development progress |
-| [Demo video](docs/05-demo-video.md) | Demo recording and walkthrough |
-| [Security and privacy](docs/06-security-and-privacy.md) | Security and privacy checklist |
+| [Demo video](docs/05-demo-video.md) | Application walkthrough |
+| [Security and privacy](docs/06-security-and-privacy.md) | Security and privacy documentation |
 
-## Status & What's Next
+---
 
-### Current
-- [x] Dashboard and application tracking interface
-- [x] Application status management
-- [x] Calendar view
-- [x] Analytics view with local funnel and source breakdown
-- [x] AI Insights panel (local-dev-only)
-- [x] Responsive web build
-- [x] GitHub Pages deployment
+## AI USAGE
 
-### Next
-- [ ] Wire up sqflite persistence so data survives a restart
-- [ ] Replace mock data with real database operations
-- [ ] A responsive desktop layout
-- [ ] Complete documentation, screenshots, and demo video
+AI tools were used during parts of Jova's development and documentation process. See [`AI-USAGE.md`](AI-USAGE.md) for the complete disclosure.
 
-## Credits
+Jova's **Field Analysis** is also an AI-powered application feature using Gemini. This is separate from AI assistance used during development.
 
-- Packages: see [`pubspec.yaml`](pubspec.yaml)
-- Flutter and Dart: Google
-- No third-party assets, icons, or sounds beyond Google Fonts (Special Elite,
-  JetBrains Mono, Inter) and Material Icons
+---
 
-## AI use
+## CREDITS
 
-AI tools were used during documentation and implementation exploration -- including migrating the app into this repository's template structure. (Note: The Gemini API is also integrated directly into the app itself; see [What It Does](#what-it-does)).
+Built with Flutter, Dart, Supabase, Google OAuth, and Gemini.
 
-## 🎗 License
+Packages used by the project are listed in [`pubspec.yaml`](pubspec.yaml).
+
+---
+
+## 🎗 LICENSE
 
 Copyright © 2026 [zii4h](https://github.com/zii4h).
+
 Released under the [MIT License](LICENSE).
