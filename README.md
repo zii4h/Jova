@@ -160,9 +160,7 @@ Jova is currently in active development as a final project.
 
 ## AI USAGE
 
-AI tools were used during parts of Jova's development and documentation process. See [`AI-USAGE.md`](AI-USAGE.md) for the complete disclosure.
-
-Jova's **Field Analysis** is also an AI-powered application feature using Gemini. This is separate from AI assistance used during development.
+AI tools were used during parts of Jova's development and documentation process. See [AI-USAGE.md](./AI-USAGE.md) for the complete disclosure.
 
 ---
 
