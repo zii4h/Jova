@@ -56,6 +56,26 @@ class _DashboardScreenState extends State<DashboardScreen> {
     );
   }
 
+  String _monthName(int month) {
+    const months = [
+      '',
+      'January',
+      'February',
+      'March',
+      'April',
+      'May',
+      'June',
+      'July',
+      'August',
+      'September',
+      'October',
+      'November',
+      'December',
+    ];
+
+    return months[month];
+  }
+
   @override
   Widget build(BuildContext context) {
     final counts = <ApplicationStatus, int>{
@@ -72,13 +92,42 @@ class _DashboardScreenState extends State<DashboardScreen> {
     if (_query.trim().isNotEmpty) {
       final q = _query.trim().toLowerCase();
 
-      visible = visible
-          .where(
-            (app) =>
-                app.company.toLowerCase().contains(q) ||
-                app.role.toLowerCase().contains(q),
-          )
-          .toList();
+      visible = visible.where((app) {
+        final searchableText = [
+          app.company,
+          app.role,
+          app.source,
+          app.location,
+          app.jobType,
+          app.salary,
+          app.description,
+          app.recruiterName,
+          app.recruiterEmail,
+          app.recruiterLinkedIn,
+          app.notes,
+          app.status.label,
+
+          // Applied date
+          app.appliedDate.toString(),
+          '${app.appliedDate.month}/${app.appliedDate.day}/${app.appliedDate.year}',
+          '${app.appliedDate.month}/${app.appliedDate.day}',
+          _monthName(app.appliedDate.month),
+          '${_monthName(app.appliedDate.month)} ${app.appliedDate.day}',
+          '${_monthName(app.appliedDate.month)} ${app.appliedDate.day}, ${app.appliedDate.year}',
+
+          // Last contacted date
+          if (app.lastContacted != null) ...[
+            app.lastContacted.toString(),
+            '${app.lastContacted!.month}/${app.lastContacted!.day}/${app.lastContacted!.year}',
+            '${app.lastContacted!.month}/${app.lastContacted!.day}',
+            _monthName(app.lastContacted!.month),
+            '${_monthName(app.lastContacted!.month)} ${app.lastContacted!.day}',
+            '${_monthName(app.lastContacted!.month)} ${app.lastContacted!.day}, ${app.lastContacted!.year}',
+          ],
+        ].join(' ').toLowerCase();
+
+        return searchableText.contains(q);
+      }).toList();
     }
 
     final groups = <ApplicationStatus, List<JobApplication>>{};
@@ -115,7 +164,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
               },
               style: FieldLog.body(size: 13),
               decoration: InputDecoration(
-                hintText: 'Search company or role',
+                hintText: 'Search applications',
                 hintStyle: FieldLog.body(
                   size: 13,
                   color: FieldLog.textSecondary,
