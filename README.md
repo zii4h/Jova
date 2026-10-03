@@ -6,10 +6,9 @@ Jova is a mobile-first job application tracker built for job seekers who want a 
 Instead of maintaining a spreadsheet, Jova gives you one place to log applications, follow their progress, revisit important dates, and understand how your job search is going.
 
 > [!IMPORTANT]
-> This repository is public for academic and portfolio purposes. It does not contain real applicant or employer data, credentials, API keys, or other private information.
+> The video presentation, PPT slides, and square image are included in the Google Drive link provided in the Canvas submission comments, along with the project repository link.
 
 - **Live demo:** https://zii4h.github.io/Jova/ <br>
-- **Demo video:** *(to be added soon)* 🛠️ <br>
 - **Course:** Applications Development and Emerging Technologies (6ADET), Holy Angel University <br>
 - **Author:** zii4h
 
