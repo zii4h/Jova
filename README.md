@@ -1,5 +1,5 @@
 # J O V A 
-> *Track Your Job Application Progress In One Place*
+<img width="1920" height="1080" alt="Image" src="https://github.com/user-attachments/assets/4b3a12ba-389c-4676-b1f9-8b5b84760520" />
 
 Jova is a mobile-first job application tracker built for job seekers who want a simpler way to keep track of where they've applied and what happens next.
 
