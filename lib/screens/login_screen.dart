@@ -90,7 +90,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     const SizedBox(height: 8),
 
                     Text(
-                      'Keep your job search in one place.',
+                      'Track your job application progress in one place',
                       style: FieldLog.body(
                         size: 13,
                         color: FieldLog.textSecondary,

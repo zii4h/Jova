@@ -1,5 +1,5 @@
 # J O V A 
-> *Track Every Step of Your Job Search*
+> *Track Your Job Application Progress In One Place*
 
 Jova is a mobile-first job application tracker built for job seekers who want a simpler way to keep track of where they've applied and what happens next.
 
@@ -106,13 +106,54 @@ The login screen should appear once the application starts successfully.
 ## STRUCTURE
 
 ~~~text
-lib/
-├── main.dart
-├── models/
-├── screens/
-├── services/
-├── theme/
-└── widgets/
+Jova/
+├── assets/
+│   └── bl-jova-favicon-copy.svg
+│
+├── lib/
+│   ├── config/
+│   │   └── env.dart
+│   │
+│   ├── data/
+│   │   ├── mock_applications.dart
+│   │   └── supabase_service.dart
+│   │
+│   ├── models/
+│   │   ├── ai_insight.dart
+│   │   └── application.dart
+│   │
+│   ├── screens/
+│   │   ├── analytics_screen.dart
+│   │   ├── calendar_screen.dart
+│   │   ├── dashboard_screen.dart
+│   │   └── login_screen.dart
+│   │
+│   ├── services/
+│   │   └── ai_insights_service.dart
+│   │
+│   ├── theme/
+│   │   └── field_log_theme.dart
+│   │
+│   ├── widgets/
+│   │   ├── application_form_sheet.dart
+│   │   ├── collapsible_section.dart
+│   │   ├── field_memo_card.dart
+│   │   ├── floating_dock.dart
+│   │   ├── index_card.dart
+│   │   ├── stage_editor_sheet.dart
+│   │   ├── status_filter_chips.dart
+│   │   └── status_stamp.dart
+│   │
+│   └── main.dart
+│
+├── web/
+│   ├── bl-jova-favicon-web.svg
+│   ├── index.html
+│   ├── jova-favicon.svg
+│   ├── manifest.json
+│   └── wh-jova-favicon.svg
+│
+└── pubspec.yaml
 ~~~
 
 - `models/` — application data models and statuses
