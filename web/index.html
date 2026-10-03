@@ -1,20 +1,149 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <!-- $FLUTTER_BASE_HREF is replaced at build time by the --base-href flag in
-       the deploy workflow. Leave it exactly as it is, or your deployed site
-       loads a blank white page. -->
   <base href="$FLUTTER_BASE_HREF">
 
   <meta charset="UTF-8">
   <meta content="IE=Edge" http-equiv="X-UA-Compatible">
-  <meta name="description" content="My 6ADET final project">
+
+  <meta name="description" content="JOVA is a job application tracking system for managing applications, hiring stages, and progress.">
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
-  <title>My Final Project</title>
+
+  <link rel="icon" type="image/svg+xml" href="wh-jova-favicon.svg">
   <link rel="manifest" href="manifest.json">
+
+  <style>
+    body {
+      margin: 0;
+      background: #ffffff;
+    }
+
+    #jova-loader {
+      position: fixed;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #ffffff;
+      z-index: 9999;
+      opacity: 1;
+      transition: opacity 350ms ease-in-out;
+    }
+
+    #jova-loader img {
+      width: 52px;
+      height: 52px;
+      animation: jova-fade-in 450ms ease-out both;
+    }
+
+.jova-loading-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+
+.jova-progress {
+  width: 90px;
+  height: 2px;
+  background: #e5e5e5;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.jova-progress-line {
+  width: 0%;
+  height: 100%;
+  background: #222222;
+  border-radius: inherit;
+  transition: width 400ms ease-out;
+}
+
+@keyframes jova-progress {
+  0% {
+    transform: translateX(-110%);
+  }
+
+  50% {
+    transform: translateX(130%);
+  }
+
+  100% {
+    transform: translateX(300%);
+  }
+}
+
+    @keyframes jova-fade-in {
+      from {
+        opacity: 0;
+        transform: scale(0.95);
+      }
+      to {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
+
+    #jova-loader.hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+  </style>
 </head>
+
 <body>
+<div id="jova-loader">
+  <div class="jova-loading-content">
+    <img src="bl-jova-favicon-web.svg" alt="JOVA">
+
+    <div class="jova-progress">
+      <div class="jova-progress-line"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const loader = document.getElementById('jova-loader');
+  const progress = document.querySelector('.jova-progress-line');
+
+  let finished = false;
+  let progressValue = 0;
+
+  // Advance gradually, but never claim completion early.
+  const timer = setInterval(() => {
+    if (finished || !progress) return;
+
+    const remaining = 90 - progressValue;
+    progressValue += Math.max(0.2, remaining * 0.08);
+    progressValue = Math.min(progressValue, 90);
+
+    progress.style.width = progressValue + '%';
+  }, 100);
+
+  window.addEventListener('flutter-first-frame', function () {
+    if (finished) return;
+    finished = true;
+
+    clearInterval(timer);
+
+    if (progress) {
+      progress.style.width = '100%';
+    }
+
+    setTimeout(() => {
+      if (!loader) return;
+
+      loader.classList.add('hidden');
+
+      loader.addEventListener('transitionend', () => {
+        loader.remove();
+      }, { once: true });
+    }, 400);
+  });
+</script>
+
   <script src="flutter_bootstrap.js" async></script>
 </body>
 </html>

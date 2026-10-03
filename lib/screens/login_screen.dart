@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../theme/field_log_theme.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -33,9 +34,7 @@ class _LoginScreenState extends State<LoginScreen> {
       await Supabase.instance.client.auth.signInWithOAuth(
         OAuthProvider.google,
         redirectTo: _redirectUrl,
-        queryParams: {
-          'prompt': 'select_account',
-        },
+        queryParams: {'prompt': 'select_account'},
       );
     } catch (error) {
       if (!mounted) return;
@@ -56,34 +55,36 @@ class _LoginScreenState extends State<LoginScreen> {
           child: SingleChildScrollView(
             padding: const EdgeInsets.all(24),
             child: ConstrainedBox(
-              constraints: const BoxConstraints(
-                maxWidth: 400,
-              ),
+              constraints: const BoxConstraints(maxWidth: 400),
               child: Container(
                 width: double.infinity,
-                padding: const EdgeInsets.fromLTRB(
-                  28,
-                  32,
-                  28,
-                  28,
-                ),
+                padding: const EdgeInsets.fromLTRB(28, 32, 28, 28),
                 decoration: BoxDecoration(
                   color: FieldLog.surfaceCard,
                   borderRadius: BorderRadius.circular(18),
-                  border: Border.all(
-                    color: FieldLog.border,
-                  ),
+                  border: Border.all(color: FieldLog.border),
                 ),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      'Jova',
-                      style: FieldLog.display(
-                        size: 28,
-                        weight: FontWeight.w700,
-                      ),
+                    Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        SvgPicture.asset(
+                          'assets/bl-jova-favicon-copy.svg',
+                          width: 28,
+                          height: 28,
+                        ),
+                        const SizedBox(width: 8),
+                        Text(
+                          'JOVA',
+                          style: FieldLog.display(
+                            size: 28,
+                            weight: FontWeight.w700,
+                          ),
+                        ),
+                      ],
                     ),
 
                     const SizedBox(height: 8),
@@ -102,14 +103,11 @@ class _LoginScreenState extends State<LoginScreen> {
                       width: double.infinity,
                       height: 48,
                       child: OutlinedButton(
-                        onPressed:
-                            _loading ? null : _signInWithGoogle,
+                        onPressed: _loading ? null : _signInWithGoogle,
                         style: OutlinedButton.styleFrom(
                           foregroundColor: FieldLog.textPrimary,
                           backgroundColor: FieldLog.surfaceCard,
-                          side: BorderSide(
-                            color: FieldLog.borderStrong,
-                          ),
+                          side: BorderSide(color: FieldLog.borderStrong),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(10),
                           ),

@@ -13,6 +13,8 @@ import 'screens/dashboard_screen.dart';
 import 'screens/calendar_screen.dart';
 import 'screens/analytics_screen.dart';
 
+import 'package:flutter_svg/flutter_svg.dart';
+
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
@@ -43,7 +45,7 @@ class JovaApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Jova',
+      title: 'JOVA | Track Job Applications',
       debugShowCheckedModeBanner: false,
       theme: FieldLog.themeData(),
       home: const AuthGate(),
@@ -149,6 +151,7 @@ class _HomeShellState extends State<HomeShell> {
       final results = await Future.wait([
         _supabase.getApplications(),
         _supabase.getStages(),
+        Future.delayed(const Duration(milliseconds: 650)),
       ]);
 
       final applications = results[0] as List<JobApplication>;
@@ -273,8 +276,22 @@ class _HomeShellState extends State<HomeShell> {
     if (_loading) {
       return Scaffold(
         backgroundColor: FieldLog.bgPage,
-        body: const Center(
-          child: CircularProgressIndicator(color: FieldLog.textPrimary),
+        body: Center(
+          child: TweenAnimationBuilder<double>(
+            tween: Tween(begin: 0.0, end: 1.0),
+            duration: const Duration(milliseconds: 650),
+            curve: Curves.easeInOut,
+            builder: (context, value, child) {
+              final opacity = value < 0.5 ? value * 2 : (1.0 - value) * 2;
+
+              return Opacity(opacity: opacity, child: child);
+            },
+            child: SvgPicture.asset(
+              'assets/bl-jova-favicon-copy.svg',
+              width: 52,
+              height: 52,
+            ),
+          ),
         ),
       );
     }
