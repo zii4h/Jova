@@ -1,23 +1,67 @@
 # Mockup and wireframes
 
-The visual plan for this app. Your wireframes answered what goes where; the
-mockup shows what it looks like.
+JOVA uses a mobile-first interface for recording job applications, checking their hiring stages, and reviewing progress.
 
 ## Mockup
 
-Put your mockup images or PDF in `assets/` and embed them here, one heading per
-screen.
+Add **actual screenshots or exported mockups** to `docs/assets/`. The image references below are placeholders until those files exist.
 
-_(Embed your mockup here once it is in `assets/`.)_
+### Login
+![JOVA login screen — ADD SCREENSHOT](assets/login.png)
+
+### Dashboard / application tracker
+![JOVA dashboard — ADD SCREENSHOT](assets/dashboard.png)
+
+### Add or edit application
+![Application form — ADD SCREENSHOT](assets/application-form.png)
+
+
+### Calendar
+![Calendar screen — ADD SCREENSHOT](assets/calendar.png)
+
+### Analytics and AI
+![Analytics — ADD SCREENSHOT](assets/analytics.png)
+
 
 ## Wireframes
 
-Your earlier box-and-label sketches and the screen flow: which screen opens
-first, and how a user moves between them. Photos of paper are fine.
 
-_(Embed your flow diagram and sketches here once they are in `assets/`.)_
+![Wireframes — ADD IMAGE](assets/wireframes.png)
 
-## Screens
+### Screen flow
 
-One short section per screen: what is on it, what the user does, and where each
-action goes.
+```text
+Open JOVA
+    |
+    v
+Google Sign-in (if signed out)
+    |
+    v
+Dashboard / Application Tracker
+    |-- Add or edit an application
+    |-- View or manage hiring stages
+    |-- Open Calendar
+    |-- Open Analytics
+    |      `-- Request AI Insights & Recommendations
+    `-- Sign out -> Login
+```
+
+## Screens:
+
+### Login screen
+Shows the JOVA identity and Google authentication button. A successful sign-in opens the application tracker.
+
+### Dashboard screen
+Displays saved job applications, their hiring stages, and stage counts. Users can add, view, and update entries or open stage controls.
+
+### Application form
+Collects the information needed to create or edit a tracked application. Saved changes appear in the tracker.
+
+### Calendar screen
+Provides a calendar-based view of application-related records. Users navigate here using the app's navigation controls.
+
+### Analytics screen
+Summarizes recorded applications and their distribution across hiring stages. The AI feature can generate on-demand insights and recommendations based on available data.
+
+### Stage editing interface
+Allows users to manage stage labels and ordering without requiring a separate full-screen page.
